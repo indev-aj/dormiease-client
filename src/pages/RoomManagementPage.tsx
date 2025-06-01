@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import Button from '@mui/material/Button';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -50,7 +50,7 @@ export default function RoomManagementPage() {
         <div className="py-10 px-4">
             <div className="w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Table Section */}
-                <Card className="md:col-span-2 shadow-lg">
+                <Card className="md:col-span-2 shadow-lg bg-white border-gray-400">
                     <CardHeader>
                         <CardTitle className="text-xl font-semibold">Room List</CardTitle>
                     </CardHeader>
@@ -77,7 +77,7 @@ export default function RoomManagementPage() {
                 </Card>
 
                 {/* Form Section */}
-                <Card className="shadow-lg h-fit">
+                <Card className="shadow-lg h-fit bg-white border-gray-400">
                     <CardHeader>
                         <CardTitle className="text-xl font-semibold">Add New Room</CardTitle>
                     </CardHeader>
@@ -103,7 +103,7 @@ export default function RoomManagementPage() {
                             />
                         </div>
 
-                        <Button onClick={handleAddRoom} className="w-full">
+                        <Button variant="contained" onClick={handleAddRoom} className="w-full">
                             Add Room
                         </Button>
                     </CardContent>

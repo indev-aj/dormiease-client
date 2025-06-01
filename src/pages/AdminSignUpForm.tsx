@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import Button from '@mui/material/Button';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState } from "react"
 import { Link } from "react-router-dom"
@@ -32,7 +32,7 @@ export default function AdminSignUpForm() {
     }
 
     return (
-        <div className="w-2xl flex items-center justify-center px-4">
+        <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
             <Card className="w-full max-w-lg shadow-xl border border-gray-200 rounded-2xl">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-semibold">Admin Sign Up</CardTitle>
@@ -93,7 +93,11 @@ export default function AdminSignUpForm() {
                             />
                         </div>
 
-                        <Button type="submit" className="w-full text-white text-md py-2">
+                        <Button
+                            variant="contained"
+                            type="submit"
+                            className="w-full text-white text-md py-2"
+                        >
                             Sign Up
                         </Button>
 

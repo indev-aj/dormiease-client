@@ -30,7 +30,7 @@ export default function ComplaintManagementPage() {
         <div className="py-10 px-4">
             <div className="w-3xl mx-auto gap-6">
                 {/* Table Section */}
-                <Card className="shadow-lg">
+                <Card className="shadow-lg bg-white">
                     <CardHeader>
                         <CardTitle className="text-xl font-semibold">Complaint List</CardTitle>
                     </CardHeader>
