@@ -55,6 +55,7 @@ model complaints {
     user       users            @relation(fields: [userId], references: [id])
     userId     Int
     status     complaint_status
+    title      String
     details    String
     reply      String
     created_at DateTime        @default(now())
