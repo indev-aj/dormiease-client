@@ -65,10 +65,13 @@ export class RoomController {
             return res.status(400).json({ message: "userId and roomId are required" })
         }
 
+        const parsedUserId = Number(userId);
+        const parsedRoomId = Number(roomId);
+
         try {
             // Check room exists
             const room = await prisma.rooms.findUnique({
-                where: { id: roomId },
+                where: { id: parsedRoomId },
                 include: {
                     userRooms: {
                         where: { status: "approved" },
@@ -89,8 +92,8 @@ export class RoomController {
             // Optional: prevent duplicate application
             const existing = await prisma.user_rooms.findFirst({
                 where: {
-                    userId,
-                    roomId,
+                    userId: parsedUserId,
+                    roomId: parsedRoomId,
                 },
             })
             if (existing) {
@@ -100,8 +103,8 @@ export class RoomController {
             // Create pending assignment
             const assignment = await prisma.user_rooms.create({
                 data: {
-                    userId,
-                    roomId,
+                    userId: parsedUserId,
+                    roomId: parsedRoomId,
                     status: "pending",
                 },
             })
@@ -111,5 +114,54 @@ export class RoomController {
             console.error("Error applying to room:", error)
             return res.status(500).json({ message: "Internal server error" })
         }
+    }
+
+    static async updateApplicationStatus(req: Request, res: Response): Promise<any> {
+        const { id } = req.params
+        const { action } = req.body // 'approve' or 'reject'
+
+        if (!["approve", "reject"].includes(action)) {
+            return res.status(400).json({ message: "Invalid action" })
+        }
+
+        const actionResult = action == "approve" ? "approved" : "rejected";
+
+        const application = await prisma.user_rooms.findUnique({
+            where: { id: Number(id) },
+            include: {
+                room: {
+                    include: {
+                        userRooms: {
+                            where: { status: "approved" },
+                        },
+                    },
+                },
+            },
+        })
+
+        if (!application) {
+            return res.status(404).json({ message: "Application not found" })
+        }
+
+        if (application.status !== "pending") {
+            return res.status(400).json({ message: "Only pending applications can be modified" })
+        }
+
+        if (action === "approve") {
+            const approvedCount = application.room.userRooms.length
+
+            if (approvedCount >= application.room.max_size) {
+                return res.status(400).json({ message: "Room is already full" })
+            }
+        }
+
+        const updated = await prisma.user_rooms.update({
+            where: { id: Number(id) },
+            data: {
+                status: actionResult,
+            },
+        });
+
+        return res.status(200).json({ message: `Application ${actionResult}`, application: updated })
     }
 }
