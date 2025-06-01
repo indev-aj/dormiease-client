@@ -21,8 +21,8 @@ export class RoomController {
             const enriched = rooms.map(room => ({
                 id: room.id,
                 name: room.name,
-                max_size: room.max_size,
-                current_users: room.userRooms.length,
+                maxSize: room.max_size,
+                currentUsers: room.userRooms.length,
             }))
 
             return res.status(200).json(enriched)
@@ -163,5 +163,47 @@ export class RoomController {
         });
 
         return res.status(200).json({ message: `Application ${actionResult}`, application: updated })
+    }
+
+    static async getRoomApplications(req: Request, res: Response): Promise<any> {
+        const applications = await prisma.user_rooms.findMany({
+            where: {
+                status: "pending",
+            },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        student_id: true,
+                    },
+                },
+                room: {
+                    select: {
+                        name: true,
+                        max_size: true,
+                        userRooms: {
+                            select: {
+                                status: true,
+                            },
+                        },
+                    },
+                },
+            },
+        })
+
+        const result = applications.map(app => ({
+            id: app.id,
+            user: {
+                name: app.user.name,
+                student_id: app.user.student_id,
+            },
+            room: {
+                name: app.room.name,
+                userRooms: app.room.userRooms,
+                maxCount: app.room.max_size,
+            },
+        }))
+
+        return res.status(200).json(result)
     }
 }

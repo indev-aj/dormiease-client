@@ -57,19 +57,34 @@ export class ComplaintController {
 
     static async fetchAll(req: Request, res: Response): Promise<any> {
         try {
-            const complaints = await prisma.complaints.findMany();
+            const complaints = await prisma.complaints.findMany({
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            student_id: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    created_at: "desc",
+                },
+            })
 
-            // const enriched = rooms.map(room => ({
-            //     id: room.id,
-            //     name: room.name,
-            //     max_size: room.max_size,
-            //     current_users: room.userRooms.length,
-            // }))
+            const formatted = complaints.map((c) => ({
+                id: c.id,
+                studentName: c.user.name,
+                studentId: c.user.student_id,
+                title: c.title ?? "", // use `c.title` if available in your schema
+                details: c.details,
+                reply: c.reply,
+                status: c.status,
+            }))
 
-            return res.status(200).json(complaints)
+            return res.status(200).json(formatted)
         } catch (error) {
             console.error("Error fetching complaints:", error)
-            return res.status(500).json({ message: "Failed to fetch rooms" })
+            return res.status(500).json({ message: "Failed to fetch complaints" })
         }
     }
 }

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { act, useEffect, useState } from "react"
+import axios from 'axios';
 import {
     Table,
     TableBody,
@@ -22,54 +23,28 @@ type Application = {
     }
 }
 
+const FETCH_ALL_APPLICATIONS_API = 'http://localhost:3000/api/room/all-applications';
+const UPDATE_APPLICATIONS_API = 'http://localhost:3000/api/admin/update-application/';
+
 export default function RoomApplicationPage() {
     const [applications, setApplications] = useState<Application[]>([])
+    const [count, setCount] = useState(0);
 
+    const fetchAllApplications = async() => {
+        const applications = await axios.get(FETCH_ALL_APPLICATIONS_API);
+        console.log(applications.data);
+
+        setApplications(applications.data);
+    };
     useEffect(() => {
-        // Mocked applications data
-        const mockData: Application[] = [
-            {
-                id: 1,
-                user: { name: "Aisyah Zainal", student_id: "S001" },
-                room: {
-                    name: "Room Alpha",
-                    userRooms: [
-                        { status: "approved" },
-                        { status: "approved" },
-                        { status: "pending" },
-                    ],
-                    maxCount: 4,
-                },
-            },
-            {
-                id: 2,
-                user: { name: "Daniel Tan", student_id: "S002" },
-                room: {
-                    name: "Room Beta",
-                    userRooms: [{ status: "approved" }],
-                    maxCount: 4,
-                },
-            },
-            {
-                id: 3,
-                user: { name: "Nurul Hafiza", student_id: "S003" },
-                room: {
-                    name: "Room Gamma",
-                    userRooms: [
-                        { status: "approved" },
-                        { status: "approved" },
-                        { status: "approved" },
-                    ],
-                    maxCount: 4,
-                },
-            },
-        ]
+        fetchAllApplications();
+    }, [count]);
 
-        setApplications(mockData)
-    }, [])
+    const handleAction = async (id: number, action: "approve" | "reject") => {
+        const url = UPDATE_APPLICATIONS_API + id;
+        const update = await axios.put(url, { action: action});
 
-    const handleAction = (id: number, action: "approve" | "reject") => {
-        alert(`Application ${id} ${action}d.`)
+        setCount((prev) => prev + 1);
     }
 
     return (

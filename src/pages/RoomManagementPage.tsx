@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import axios from 'axios';
 import Button from '@mui/material/Button';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,6 +25,9 @@ type Room = {
     currentUsers: number
 }
 
+const FETCH_ALL_ROOMS_API = 'http://localhost:3000/api/room/all';
+const CREATE_ROOM_API = 'http://localhost:3000/api/room/create';
+
 export default function RoomManagementPage() {
     const [rooms, setRooms] = useState<Room[]>([
         { id: 1, name: "Room A", maxSize: 4, currentUsers: 2 },
@@ -32,11 +36,13 @@ export default function RoomManagementPage() {
 
     const [newRoom, setNewRoom] = useState({ name: "", maxSize: "" })
 
-    const handleAddRoom = () => {
+    const handleAddRoom = async () => {
         if (!newRoom.name || !newRoom.maxSize) return
 
+        const createRoom = await axios.post(CREATE_ROOM_API, { name: newRoom.name, maxSize: newRoom.maxSize });
+
         const room: Room = {
-            id: rooms.length + 1,
+            id: createRoom.data['id'],
             name: newRoom.name,
             maxSize: parseInt(newRoom.maxSize),
             currentUsers: 0,
@@ -45,6 +51,17 @@ export default function RoomManagementPage() {
         setRooms([...rooms, room])
         setNewRoom({ name: "", maxSize: "" })
     }
+
+    useEffect(() => {
+        const fetchAllRooms = async() => {
+            const rooms = await axios.get(FETCH_ALL_ROOMS_API);
+            console.log(rooms.data);
+
+            setRooms(rooms.data);
+        };
+
+        fetchAllRooms();
+    }, []);
 
     return (
         <div className="py-10 px-4">

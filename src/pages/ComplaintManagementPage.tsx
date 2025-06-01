@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import axios from 'axios';
 
 type Complaint = {
     id: number
@@ -10,26 +11,28 @@ type Complaint = {
     status: "open" | "resolved"
 }
 
+const FETCH_ALL_COMPLAINTS_API = 'http://localhost:3000/api/complaint/all';
+
 export default function ComplaintManagementPage() {
     const [complaints, setComplaints] = useState<Complaint[]>([
-        {
-            id: 1,
-            studentName: "Ali Karim",
-            studentId: "S001",
-            title: "Fan not working",
-            details: "The ceiling fan in Room 12 is not functioning.",
-            reply: "",
-            status: "open"
-        },
-        {
-            id: 2,
-            studentName: "Nora Lee",
-            studentId: "S002",
-            title: "Water leakage",
-            details: "There is a leaking pipe in the shared bathroom.",
-            reply: "",
-            status: "resolved"
-        }
+        // {
+        //     id: 1,
+        //     studentName: "Ali Karim",
+        //     studentId: "S001",
+        //     title: "Fan not working",
+        //     details: "The ceiling fan in Room 12 is not functioning.",
+        //     reply: "",
+        //     status: "open"
+        // },
+        // {
+        //     id: 2,
+        //     studentName: "Nora Lee",
+        //     studentId: "S002",
+        //     title: "Water leakage",
+        //     details: "There is a leaking pipe in the shared bathroom.",
+        //     reply: "",
+        //     status: "resolved"
+        // }
     ])
 
     const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null)
@@ -62,24 +65,18 @@ export default function ComplaintManagementPage() {
         setIsDialogOpen(false)
     }
 
+    const handleFetchComplaints = async () => {
+        const complaints = await axios.get(FETCH_ALL_COMPLAINTS_API);
+        setComplaints(complaints.data);
+    }
+
+    useEffect(() => {
+        handleFetchComplaints();
+    }, []);
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Fixed Navigation Bar */}
-            {/* <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex space-x-8">
-                            <a href="#" className="text-gray-900 hover:text-gray-700 px-3 py-2 text-sm font-medium">HOME</a>
-                            <a href="#" className="text-gray-900 hover:text-gray-700 px-3 py-2 text-sm font-medium">ROOMS</a>
-                            <a href="#" className="text-blue-600 border-b-2 border-blue-600 px-3 py-2 text-sm font-medium">COMPLAINTS</a>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <span className="text-gray-600 text-sm">Hello, <span className="font-medium">Admin</span></span>
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium">LOGOUT</button>
-                        </div>
-                    </div>
-                </div>
-            </nav> */}
 
             {/* Main Content */}
             <div className="pt-20 pb-10 px-4">
