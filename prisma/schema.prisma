@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model admins {
+    id       Int    @id @default(autoincrement())
+    name     String
+    staff_id String
+    password String
+
+    complaints complaints[]
+}
+
+model users {
+    id         Int    @id @default(autoincrement())
+    name       String
+    student_id String
+    email      String @unique
+    password   String
+
+    rooms      user_rooms[]
+    complaints complaints[]
+}
+
+model rooms {
+    id       Int    @id @default(autoincrement())
+    name     String
+    max_size Int
+
+    userRooms user_rooms[]
+}
+
+model user_rooms {
+    id     Int        @id @default(autoincrement())
+    user   users       @relation(fields: [userId], references: [id])
+    userId Int
+    room   rooms       @relation(fields: [roomId], references: [id])
+    roomId Int
+    status room_status
+
+    @@index([userId])
+    @@index([roomId])
+}
+
+model complaints {
+    id         Int             @id @default(autoincrement())
+    admin      admins           @relation(fields: [adminId], references: [id])
+    adminId    Int
+    user       users            @relation(fields: [userId], references: [id])
+    userId     Int
+    status     complaint_status
+    details    String
+    reply      String
+    created_at DateTime        @default(now())
+    updated_at DateTime        @updatedAt
+
+    @@index([adminId])
+    @@index([userId])
+}
+
+// Enums
+enum room_status {
+    pending
+    approved
+    rejected
+}
+
+enum complaint_status {
+    open
+    resolved
+}
