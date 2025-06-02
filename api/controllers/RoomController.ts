@@ -1,5 +1,5 @@
-import { Request, Response } from "express"
-import { PrismaClient } from '@prisma/client';
+import { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -12,23 +12,27 @@ export class RoomController {
         try {
             const rooms = await prisma.rooms.findMany({
                 include: {
-                    userRooms: {
-                        where: { status: "approved" },
-                    },
+                    userRooms: true, // include all user-room relationships regardless of status
                 },
             });
 
-            const enriched = rooms.map(room => ({
+            const enriched = rooms.map((room) => ({
                 id: room.id,
                 name: room.name,
                 maxSize: room.max_size,
-                currentUsers: room.userRooms.length,
-            }))
+                currentUsers: room.userRooms.filter((ur) => ur.status === "approved")
+                    .length,
+                userIds: room.userRooms.map((ur) => ur.userId),
+                userStatuses: room.userRooms.map((ur) => ({
+                    userId: ur.userId,
+                    status: ur.status,
+                })),
+            }));
 
-            return res.status(200).json(enriched)
+            return res.status(200).json(enriched);
         } catch (error) {
-            console.error("Error fetching rooms:", error)
-            return res.status(500).json({ message: "Failed to fetch rooms" })
+            console.error("Error fetching rooms:", error);
+            return res.status(500).json({ message: "Failed to fetch rooms" });
         }
     }
 
@@ -37,10 +41,10 @@ export class RoomController {
      * Create a new room with name and max_size
      */
     static async create(req: Request, res: Response): Promise<any> {
-        const { name, maxSize } = req.body
+        const { name, maxSize } = req.body;
 
         if (!name || !maxSize) {
-            return res.status(400).json({ message: "Invalid room data" })
+            return res.status(400).json({ message: "Invalid room data" });
         }
 
         try {
@@ -49,20 +53,22 @@ export class RoomController {
                     name,
                     max_size: Number(maxSize),
                 },
-            })
+            });
 
-            return res.status(201).json(room)
+            return res.status(201).json(room);
         } catch (error) {
-            console.error("Error creating room:", error)
-            return res.status(500).json({ message: "Failed to create room" })
+            console.error("Error creating room:", error);
+            return res.status(500).json({ message: "Failed to create room" });
         }
     }
 
     static async applyToRoom(req: Request, res: Response): Promise<any> {
-        const { userId, roomId } = req.body
+        const { userId, roomId } = req.body;
 
         if (!userId || !roomId) {
-            return res.status(400).json({ message: "userId and roomId are required" })
+            return res
+                .status(400)
+                .json({ message: "userId and roomId are required" });
         }
 
         const parsedUserId = Number(userId);
@@ -77,16 +83,16 @@ export class RoomController {
                         where: { status: "approved" },
                     },
                 },
-            })
+            });
 
             if (!room) {
-                return res.status(404).json({ message: "Room not found" })
+                return res.status(404).json({ message: "Room not found" });
             }
 
             // Check if room is full
-            const currentCount = room.userRooms.length
+            const currentCount = room.userRooms.length;
             if (currentCount >= room.max_size) {
-                return res.status(400).json({ message: "Room is already full" })
+                return res.status(400).json({ message: "Room is already full" });
             }
 
             // Optional: prevent duplicate application
@@ -95,9 +101,13 @@ export class RoomController {
                     userId: parsedUserId,
                     roomId: parsedRoomId,
                 },
-            })
+            });
             if (existing) {
-                return res.status(409).json({ message: "You have already applied or are assigned to this room" })
+                return res
+                    .status(409)
+                    .json({
+                        message: "You have already applied or are assigned to this room",
+                    });
             }
 
             // Create pending assignment
@@ -107,21 +117,26 @@ export class RoomController {
                     roomId: parsedRoomId,
                     status: "pending",
                 },
-            })
+            });
 
-            return res.status(201).json({ message: "Application submitted", assignment })
+            return res
+                .status(201)
+                .json({ message: "Application submitted", assignment });
         } catch (error) {
-            console.error("Error applying to room:", error)
-            return res.status(500).json({ message: "Internal server error" })
+            console.error("Error applying to room:", error);
+            return res.status(500).json({ message: "Internal server error" });
         }
     }
 
-    static async updateApplicationStatus(req: Request, res: Response): Promise<any> {
-        const { id } = req.params
-        const { action } = req.body // 'approve' or 'reject'
+    static async updateApplicationStatus(
+        req: Request,
+        res: Response
+    ): Promise<any> {
+        const { id } = req.params;
+        const { action } = req.body; // 'approve' or 'reject'
 
         if (!["approve", "reject"].includes(action)) {
-            return res.status(400).json({ message: "Invalid action" })
+            return res.status(400).json({ message: "Invalid action" });
         }
 
         const actionResult = action == "approve" ? "approved" : "rejected";
@@ -137,21 +152,23 @@ export class RoomController {
                     },
                 },
             },
-        })
+        });
 
         if (!application) {
-            return res.status(404).json({ message: "Application not found" })
+            return res.status(404).json({ message: "Application not found" });
         }
 
         if (application.status !== "pending") {
-            return res.status(400).json({ message: "Only pending applications can be modified" })
+            return res
+                .status(400)
+                .json({ message: "Only pending applications can be modified" });
         }
 
         if (action === "approve") {
-            const approvedCount = application.room.userRooms.length
+            const approvedCount = application.room.userRooms.length;
 
             if (approvedCount >= application.room.max_size) {
-                return res.status(400).json({ message: "Room is already full" })
+                return res.status(400).json({ message: "Room is already full" });
             }
         }
 
@@ -162,7 +179,9 @@ export class RoomController {
             },
         });
 
-        return res.status(200).json({ message: `Application ${actionResult}`, application: updated })
+        return res
+            .status(200)
+            .json({ message: `Application ${actionResult}`, application: updated });
     }
 
     static async getRoomApplications(req: Request, res: Response): Promise<any> {
@@ -189,9 +208,9 @@ export class RoomController {
                     },
                 },
             },
-        })
+        });
 
-        const result = applications.map(app => ({
+        const result = applications.map((app) => ({
             id: app.id,
             user: {
                 name: app.user.name,
@@ -202,8 +221,8 @@ export class RoomController {
                 userRooms: app.room.userRooms,
                 maxCount: app.room.max_size,
             },
-        }))
+        }));
 
-        return res.status(200).json(result)
+        return res.status(200).json(result);
     }
 }

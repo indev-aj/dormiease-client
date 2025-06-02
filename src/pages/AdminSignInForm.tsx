@@ -4,6 +4,9 @@ import Button from '@mui/material/Button';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import axios from 'axios';
+
+const SIGN_IN_API = 'http://localhost:3000/api/admin/signin';
 
 export default function AdminSignInForm() {
     const [formData, setFormData] = useState({
@@ -17,11 +20,17 @@ export default function AdminSignInForm() {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         // TODO: call signup API
         console.log("Admin Signup Data:", formData)
-        navigate('/rooms');
+
+        const signin = await axios.post(SIGN_IN_API, { staff_id: formData.staffId, password: formData.password });
+
+        if (signin.status == 200) {
+            localStorage.setItem('admin', JSON.stringify(signin.data.admin))
+            navigate('/rooms');
+        }
     }
 
     return (

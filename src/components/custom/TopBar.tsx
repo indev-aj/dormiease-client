@@ -24,7 +24,7 @@ export default function TopBar({ userName }: Props) {
     }
 
     const handleLogout = () => {
-        localStorage.removeItem("authToken")
+        localStorage.removeItem("admin")
         navigate("/login")
     }
 
@@ -72,7 +72,7 @@ export default function TopBar({ userName }: Props) {
                     </div>
                     <div className="flex items-center space-x-4">
                         <span className="text-gray-600 text-sm">Hello, <span className="font-medium">Admin</span></span>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium">LOGOUT</button>
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium" onClick={handleLogout}>LOGOUT</button>
                     </div>
                 </div>
             </div>

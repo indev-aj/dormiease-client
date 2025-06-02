@@ -61,6 +61,6 @@ export class UserController {
 
         return res
             .status(200)
-            .json({ user: { id: user.id, name: user.name, email: user.email } })
+            .json({ user: { id: user.id, name: user.name, email: user.email, studentId: user.student_id } })
     }
 }

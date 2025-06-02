@@ -12,6 +12,7 @@ type Complaint = {
 }
 
 const FETCH_ALL_COMPLAINTS_API = 'http://localhost:3000/api/complaint/all';
+const UPDATE_COMPLAINTS_API = 'http://localhost:3000/api/admin/update-complaint/';
 
 export default function ComplaintManagementPage() {
     const [complaints, setComplaints] = useState<Complaint[]>([
@@ -39,18 +40,30 @@ export default function ComplaintManagementPage() {
     const [replyText, setReplyText] = useState("")
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-    const handleResolve = () => {
-        if (!selectedComplaint) return
-        setComplaints(prev =>
-            prev.map(c =>
-                c.id === selectedComplaint.id
-                    ? { ...c, reply: replyText, status: "resolved" }
-                    : c
+    const handleResolve = async () => {
+        if (!selectedComplaint) return;
+
+        const admin = JSON.parse(localStorage.getItem("admin") || "{}");
+        const adminId = admin.id;
+        const url = UPDATE_COMPLAINTS_API + selectedComplaint.id;
+
+        const resolve = await axios.put(url, { adminId: adminId, reply: replyText });
+
+        if (resolve.status == 200) {
+            setComplaints(prev =>
+                prev.map(c =>
+                    c.id === selectedComplaint.id
+                        ? { ...c, reply: replyText, status: "resolved" }
+                        : c
+                )
             )
-        )
-        setSelectedComplaint(null)
-        setReplyText("")
-        setIsDialogOpen(false)
+            setSelectedComplaint(null)
+            setReplyText("")
+            setIsDialogOpen(false)
+        } else {
+            alert('Something went wrong');
+        }
+
     }
 
     const openDialog = (complaint: Complaint) => {
