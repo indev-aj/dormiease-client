@@ -3,7 +3,10 @@ import { Label } from "@/components/ui/label"
 import Button from '@mui/material/Button';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import axios from 'axios';
+
+const SIGN_UP_API = 'http://localhost:3000/api/admin/signup';
 
 export default function AdminSignUpForm() {
     const [formData, setFormData] = useState({
@@ -11,7 +14,9 @@ export default function AdminSignUpForm() {
         staffId: "",
         password: "",
         rePassword: ""
-    })
+    });
+
+    const navigate = useNavigate();
 
     const validatePasswordMatch = (password: string, rePassword: string): boolean => {
         return password === rePassword
@@ -21,13 +26,18 @@ export default function AdminSignUpForm() {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         // TODO: call signup API
         console.log("Admin Signup Data:", formData)
 
         if (!validatePasswordMatch(formData.password, formData.rePassword)) {
             alert('Password do not match!');
+        }
+
+        const signup = await axios.post(SIGN_UP_API, { name: formData.name, staff_id: formData.staffId, password: formData.password });
+        if (signup.status == 200 || signup.status == 201) {
+            navigate('/login');
         }
     }
 
