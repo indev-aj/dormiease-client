@@ -7,7 +7,7 @@ export default function AppLayout() {
     return (
         <div className="">
             <TopBar userName={userName} />
-            <main className="p-6">
+            <main className="pt-20 p-6">
                 <Outlet />
             </main>
         </div>

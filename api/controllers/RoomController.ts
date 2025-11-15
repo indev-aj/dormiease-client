@@ -13,6 +13,7 @@ export class RoomController {
             const rooms = await prisma.rooms.findMany({
                 include: {
                     userRooms: true, // include all user-room relationships regardless of status
+                    user_hostel_relation: true,
                 },
             });
 
@@ -20,11 +21,12 @@ export class RoomController {
                 id: room.id,
                 name: room.name,
                 maxSize: room.max_size,
-                currentUsers: room.userRooms.filter((ur) => ur.status === "approved")
+                hostelId: room.hostel_id,
+                currentUsers: room.user_hostel_relation.filter((ur) => ur.status === "approved")
                     .length,
-                userIds: room.userRooms.map((ur) => ur.userId),
-                userStatuses: room.userRooms.map((ur) => ({
-                    userId: ur.userId,
+                userIds: room.user_hostel_relation.map((ur) => ur.user_id),
+                userStatuses: room.user_hostel_relation.map((ur) => ({
+                    userId: ur.user_id,
                     status: ur.status,
                 })),
             }));

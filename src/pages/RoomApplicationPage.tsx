@@ -1,4 +1,4 @@
-import { act, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import axios from 'axios';
 import {
     Table,
@@ -36,6 +36,7 @@ export default function RoomApplicationPage() {
 
         setApplications(applications.data);
     };
+    
     useEffect(() => {
         fetchAllApplications();
     }, [count]);

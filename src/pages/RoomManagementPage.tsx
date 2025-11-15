@@ -17,50 +17,60 @@ import {
     TableHead,
     TableCell,
 } from "@/components/ui/table"
+import type { Hostel, NewRoomState, Room } from "@/lib/types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type Room = {
-    id: number
-    name: string
-    maxSize: number
-    currentUsers: number
-}
-
+const FETCH_ALL_HOSTELS_API = 'http://localhost:3000/api/hostels/all';
 const FETCH_ALL_ROOMS_API = 'http://localhost:3000/api/room/all';
 const CREATE_ROOM_API = 'http://localhost:3000/api/room/create';
 
 export default function RoomManagementPage() {
-    const [rooms, setRooms] = useState<Room[]>([
-        { id: 1, name: "Room A", maxSize: 4, currentUsers: 2 },
-        { id: 2, name: "Room B", maxSize: 3, currentUsers: 1 },
-    ])
-
-    const [newRoom, setNewRoom] = useState({ name: "", maxSize: "" })
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [newRoom, setNewRoom] = useState<NewRoomState>({ name: "", maxSize: "", hostelId: null });
+    const [hostels, setHostels] = useState<Hostel[]>([]);
 
     const handleAddRoom = async () => {
         if (!newRoom.name || !newRoom.maxSize) return
 
-        const createRoom = await axios.post(CREATE_ROOM_API, { name: newRoom.name, maxSize: newRoom.maxSize });
+        const createRoom = await axios.post(CREATE_ROOM_API, { name: newRoom.name, maxSize: newRoom.maxSize, hostelId: newRoom.hostelId });
 
         const room: Room = {
             id: createRoom.data['id'],
             name: newRoom.name,
             maxSize: parseInt(newRoom.maxSize),
             currentUsers: 0,
+            hostelId: newRoom.hostelId
         }
 
         setRooms([...rooms, room])
-        setNewRoom({ name: "", maxSize: "" })
+        setNewRoom({ name: "", maxSize: "", hostelId: null })
     }
 
     useEffect(() => {
-        const fetchAllRooms = async() => {
+        const fetchAllRooms = async () => {
             const rooms = await axios.get(FETCH_ALL_ROOMS_API);
             console.log(rooms.data);
 
             setRooms(rooms.data);
         };
 
-        fetchAllRooms();
+        const fetchAllHostels = async () => {
+            const hostels = await axios.get(FETCH_ALL_HOSTELS_API);
+            setHostels(hostels.data);
+        };
+
+        const fetchData = async () => {
+            try {
+                await Promise.all([
+                    fetchAllRooms(),
+                    fetchAllHostels()
+                ])
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchData();
     }, []);
 
     return (
@@ -77,6 +87,7 @@ export default function RoomManagementPage() {
                                 <TableRow>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Max Size</TableHead>
+                                    <TableHead>Hostel Name</TableHead>
                                     <TableHead>Current Users</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -85,6 +96,7 @@ export default function RoomManagementPage() {
                                     <TableRow key={room.id} className="text-left">
                                         <TableCell>{room.name}</TableCell>
                                         <TableCell>{room.maxSize}</TableCell>
+                                        <TableCell>{hostels.find(h => h.id == room.hostelId)?.name || ''}</TableCell>
                                         <TableCell>{room.currentUsers}</TableCell>
                                     </TableRow>
                                 ))}
@@ -94,7 +106,7 @@ export default function RoomManagementPage() {
                 </Card>
 
                 {/* Form Section */}
-                <Card className="shadow-lg h-fit bg-white border-gray-400">
+                <Card className="shadow-lg bg-white border-gray-400 relative h-fit">
                     <CardHeader>
                         <CardTitle className="text-xl font-semibold">Add New Room</CardTitle>
                     </CardHeader>
@@ -118,6 +130,28 @@ export default function RoomManagementPage() {
                                 value={newRoom.maxSize}
                                 onChange={(e) => setNewRoom({ ...newRoom, maxSize: e.target.value })}
                             />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="hostel">Hostel</Label>
+                            <Select
+                                value={newRoom.hostelId?.toString()}
+                                onValueChange={(value) =>
+                                    setNewRoom({ ...newRoom, hostelId: Number(value) })
+                                }
+                            >
+                                <SelectTrigger id="hostel" className="w-full">
+                                    <SelectValue placeholder="Select a hostel" />
+                                </SelectTrigger>
+
+                                <SelectContent position="popper" sideOffset={5} className="z-[100]">
+                                    {hostels.map((h) => (
+                                        <SelectItem key={h.id} value={String(h.id)}>
+                                            {h.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <Button variant="contained" onClick={handleAddRoom} className="w-full">

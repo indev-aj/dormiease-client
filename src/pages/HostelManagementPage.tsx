@@ -17,11 +17,7 @@ import {
     TableHead,
     TableCell,
 } from "@/components/ui/table"
-
-type Hostel = {
-    id: number
-    name: string
-}
+import type { Hostel } from "@/lib/types";
 
 const FETCH_ALL_HOSTELS_API = 'http://localhost:3000/api/hostels/all';
 const CREATE_HOSTEL_API = 'http://localhost:3000/api/hostels/create';
