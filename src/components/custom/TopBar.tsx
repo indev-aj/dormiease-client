@@ -43,6 +43,15 @@ export default function TopBar({ userName }: Props) {
                             HOME
                         </a>
                         <a
+                            href="/hostels"
+                            className={`px-3 py-2 text-sm font-medium ${isActive("/hostels")
+                                    ? "text-blue-600 border-b-2 border-blue-600"
+                                    : "text-gray-900 hover:text-gray-700"
+                                }`}
+                        >
+                            HOSTELS
+                        </a>
+                        <a
                             href="/rooms"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/rooms")
                                     ? "text-blue-600 border-b-2 border-blue-600"

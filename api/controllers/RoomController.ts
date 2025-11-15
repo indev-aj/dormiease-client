@@ -41,9 +41,9 @@ export class RoomController {
      * Create a new room with name and max_size
      */
     static async create(req: Request, res: Response): Promise<any> {
-        const { name, maxSize } = req.body;
+        const { name, maxSize, hostelId } = req.body;
 
-        if (!name || !maxSize) {
+        if (!name || !maxSize || !hostelId) {
             return res.status(400).json({ message: "Invalid room data" });
         }
 
@@ -52,6 +52,7 @@ export class RoomController {
                 data: {
                     name,
                     max_size: Number(maxSize),
+                    hostel_id: Number(hostelId)
                 },
             });
 

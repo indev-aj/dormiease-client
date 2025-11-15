@@ -26,14 +26,18 @@ model users {
 
     rooms      user_rooms[]
     complaints complaints[]
+    user_hostel_relation user_hostel_relation[]
 }
 
 model rooms {
     id       Int    @id @default(autoincrement())
     name     String
     max_size Int
+    hostel   hostels @relation(fields: [hostel_id], references: [id])
+    hostel_id Int
 
     userRooms user_rooms[]
+    user_hostel_relation user_hostel_relation[]
 }
 
 model user_rooms {
@@ -75,4 +79,27 @@ enum room_status {
 enum complaint_status {
     open
     resolved
+}
+
+model hostels {
+    id       Int    @id @default(autoincrement())
+    name     String
+
+    user_hostel_relation user_hostel_relation[]
+    rooms rooms[]
+}
+
+model user_hostel_relation {
+    id       Int         @id @default(autoincrement())
+    user     users       @relation(fields: [user_id], references: [id])
+    user_id   Int
+    hostel   hostels     @relation(fields: [hostel_id], references: [id])
+    hostel_id Int
+    room     rooms?      @relation(fields: [room_id], references: [id])
+    room_id   Int?
+    status   room_status @default(pending)
+
+    @@index([user_id])
+    @@index([hostel_id])
+    @@index([room_id])
 }

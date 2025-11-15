@@ -7,6 +7,7 @@ import RoomManagementPage from './pages/RoomManagementPage'
 import ComplaintManagementPage from './pages/ComplaintManagementPage'
 import AppLayout from './layouts/AppLayout'
 import RoomApplicationPage from './pages/RoomApplicationPage'
+import HostelManagementPage from './pages/HostelManagementPage'
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/login" element={<AdminSignInForm />} />
 
             <Route path="/" element={<AppLayout />}>
+                <Route path="hostels" element={<HostelManagementPage />} />
                 <Route path="rooms" element={<RoomManagementPage />} />
                 <Route path="room-applications" element={<RoomApplicationPage />} />
                 <Route path="complaints" element={<ComplaintManagementPage />} />
