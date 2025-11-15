@@ -18,7 +18,7 @@ import {
     TableCell,
 } from "@/components/ui/table"
 import type { Hostel, NewRoomState, Room } from "@/lib/types";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 const FETCH_ALL_HOSTELS_API = 'http://localhost:3000/api/hostels/all';
 const FETCH_ALL_ROOMS_API = 'http://localhost:3000/api/room/all';
@@ -133,25 +133,24 @@ export default function RoomManagementPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="hostel">Hostel</Label>
-                            <Select
-                                value={newRoom.hostelId?.toString()}
-                                onValueChange={(value) =>
-                                    setNewRoom({ ...newRoom, hostelId: Number(value) })
-                                }
-                            >
-                                <SelectTrigger id="hostel" className="w-full">
-                                    <SelectValue placeholder="Select a hostel" />
-                                </SelectTrigger>
-
-                                <SelectContent position="popper" sideOffset={5} className="z-[100]">
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Select Room</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={newRoom.hostelId?.toString()}
+                                    label="Select Room"
+                                    onChange={(value) =>
+                                        setNewRoom({ ...newRoom, hostelId: Number(value) })
+                                    }
+                                >
                                     {hostels.map((h) => (
-                                        <SelectItem key={h.id} value={String(h.id)}>
+                                        <MenuItem key={h.id} value={String(h.id)}>
                                             {h.name}
-                                        </SelectItem>
+                                        </MenuItem>
                                     ))}
-                                </SelectContent>
-                            </Select>
+                                </Select>
+                            </FormControl>
                         </div>
 
                         <Button variant="contained" onClick={handleAddRoom} className="w-full">

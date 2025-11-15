@@ -10,12 +10,78 @@ export class HostelController {
      */
     static async fetchAll(req: Request, res: Response): Promise<any> {
         try {
-            const hostels = await prisma.hostels.findMany();
+            const hostels = await prisma.hostels.findMany({
+                include: {
+                    rooms: {
+                        include: {
+                            user_hostel_relation: true,
+                        },
+                    },
+                    user_hostel_relation: true
+                },
+            });
 
-            const enriched = hostels.map((hostel) => ({
-                id: hostel.id,
-                name: hostel.name,
-            }));
+            const enriched = hostels.map((hostel) => {
+                // Collect room-level details
+                const rooms = hostel.rooms.map((room) => {
+                    const approvedUsers = room.user_hostel_relation
+                        .filter((ur) => ur.status === "approved")
+                        .map((u) => u.user_id);
+
+                    return {
+                        id: room.id,
+                        name: room.name,
+                        maxSize: room.max_size,
+                        currentUsers: approvedUsers.length,
+                        userStatuses: room.user_hostel_relation.map((ur) => ({
+                            userId: ur.user_id,
+                            status: ur.status,
+                        })),
+                    };
+                });
+
+                // Aggregate hostel capacity
+                const totalCapacity = hostel.rooms.reduce(
+                    (sum, r) => sum + r.max_size,
+                    0
+                );
+
+                const totalApprovedUsers = hostel.rooms.reduce(
+                    (sum, r) =>
+                        sum +
+                        r.user_hostel_relation.filter(
+                            (ur) => ur.status === "approved"
+                        ).length,
+                    0
+                );
+
+                // 🔥 Aggregate user statuses across ALL rooms inside this hostel
+                const approvedUsers: number[] = [];
+                const pendingUsers: number[] = [];
+                const rejectedUsers: number[] = [];
+                
+                hostel.user_hostel_relation.forEach((ur) => {
+                    if (ur.status === "approved") approvedUsers.push(ur.user_id);
+                    if (ur.status === "pending") pendingUsers.push(ur.user_id);
+                    if (ur.status === "rejected") rejectedUsers.push(ur.user_id);
+                });
+
+                return {
+                    id: hostel.id,
+                    name: hostel.name,
+                    totalRooms: hostel.rooms.length,
+                    totalCapacity,
+                    totalApprovedUsers,
+                    isFull: totalApprovedUsers >= totalCapacity,
+
+                    // 🔥 NEW aggregated lists
+                    approvedUsers,
+                    pendingUsers,
+                    rejectedUsers,
+
+                    rooms,
+                };
+            });
 
             return res.status(200).json(enriched);
         } catch (error) {
@@ -167,7 +233,7 @@ export class HostelController {
 
                 // Fetch rooms in this hostel
                 const rooms = await tx.rooms.findMany({
-                    where: { hostel_id: application.id },
+                    where: { hostel_id: application.hostel_id },
                     include: {
                         user_hostel_relation: true
                     }
