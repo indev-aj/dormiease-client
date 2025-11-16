@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button } from "@mui/material";
 
 
-type Complaint = {
+type Maintenance = {
     id: number
     studentName: string
     studentId: string
@@ -13,12 +13,12 @@ type Complaint = {
     status: "open" | "resolved"
 }
 
-const FETCH_ALL_COMPLAINTS_API = 'http://localhost:3000/api/complaint/all';
-const UPDATE_COMPLAINTS_API = 'http://localhost:3000/api/admin/update-complaint/';
-const SUBMIT_COMPLAINT_API = 'http://localhost:3000/api/admin/submit-complaint';
+const FETCH_ALL_MAINTENANCES_API = 'http://localhost:3000/api/maintenance/all';
+const UPDATE_MAINTENANCES_API = 'http://localhost:3000/api/admin/update-maintenance/';
+const SUBMIT_MAINTENANCE_API = 'http://localhost:3000/api/admin/submit-maintenance';
 
-export default function ComplaintManagementPage() {
-    const [complaints, setComplaints] = useState<Complaint[]>([
+export default function MaintenanceManagementPage() {
+    const [Maintenances, setMaintenances] = useState<Maintenance[]>([
         // {
         //     id: 1,
         //     studentName: "Ali Karim",
@@ -39,32 +39,32 @@ export default function ComplaintManagementPage() {
         // }
     ])
 
-    const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null)
+    const [selectedMaintenance, setSelectedMaintenance] = useState<Maintenance | null>(null)
     const [replyText, setReplyText] = useState("")
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [openCreateComplaintModal, setOpenCreateComplaintModal] = useState(false);
-    const [complaintTitle, setComplaintTitle] = useState("");
-    const [complaintDetails, setComplaintDetails] = useState("");
+    const [openCreateMaintenanceModal, setOpenCreateMaintenanceModal] = useState(false);
+    const [maintenanceTitle, setMaintenanceTitle] = useState("");
+    const [maintenanceDetails, setMaintenanceDetails] = useState("");
     const [studentId, setStudentId] = useState("");
 
     const handleResolve = async () => {
-        if (!selectedComplaint) return;
+        if (!selectedMaintenance) return;
 
         const admin = JSON.parse(localStorage.getItem("admin") || "{}");
         const adminId = admin.id;
-        const url = UPDATE_COMPLAINTS_API + selectedComplaint.id;
+        const url = UPDATE_MAINTENANCES_API + selectedMaintenance.id;
 
         const resolve = await axios.put(url, { adminId: adminId, reply: replyText });
 
         if (resolve.status == 200) {
-            setComplaints(prev =>
+            setMaintenances(prev =>
                 prev.map(c =>
-                    c.id === selectedComplaint.id
+                    c.id === selectedMaintenance.id
                         ? { ...c, reply: replyText, status: "resolved" }
                         : c
                 )
             )
-            setSelectedComplaint(null)
+            setSelectedMaintenance(null)
             setReplyText("")
             setIsDialogOpen(false)
         } else {
@@ -73,51 +73,51 @@ export default function ComplaintManagementPage() {
 
     }
 
-    const createComplaint = async () => {
+    const createMaintenance = async () => {
         try {
             const payload = {
-                title: complaintTitle,
-                details: complaintDetails,
+                title: maintenanceTitle,
+                details: maintenanceDetails,
                 userId: studentId
             }
 
-            await axios.post(SUBMIT_COMPLAINT_API, payload);
-            await handleFetchComplaints();
-            handleCancelCreateComplaint();
+            await axios.post(SUBMIT_MAINTENANCE_API, payload);
+            await handleFetchMaintenances();
+            handleCancelCreateMaintenance();
         } catch (error) {
             console.error(error);
         }
     }
 
-    const openDialog = (complaint: Complaint) => {
-        setSelectedComplaint(complaint)
+    const openDialog = (complaint: Maintenance) => {
+        setSelectedMaintenance(complaint)
         setReplyText(complaint.reply)
         setIsDialogOpen(true)
     }
 
     const closeDialog = () => {
-        setSelectedComplaint(null)
+        setSelectedMaintenance(null)
         setReplyText("")
         setIsDialogOpen(false)
     }
 
-    const handleFetchComplaints = async () => {
-        const complaints = await axios.get(FETCH_ALL_COMPLAINTS_API);
-        setComplaints(complaints.data);
+    const handleFetchMaintenances = async () => {
+        const maintenances = await axios.get(FETCH_ALL_MAINTENANCES_API);
+        setMaintenances(maintenances.data);
     }
 
-    const handleClickCreateComplaint = () => {
-        setOpenCreateComplaintModal(true);
+    const handleClickCreateMaintenance = () => {
+        setOpenCreateMaintenanceModal(true);
     }
 
-    const handleCancelCreateComplaint = () => {
-        setComplaintTitle("");
-        setComplaintDetails("");
-        setOpenCreateComplaintModal(false);
+    const handleCancelCreateMaintenance = () => {
+        setMaintenanceTitle("");
+        setMaintenanceDetails("");
+        setOpenCreateMaintenanceModal(false);
     }
 
     useEffect(() => {
-        handleFetchComplaints();
+        handleFetchMaintenances();
     }, []);
 
     return (
@@ -129,10 +129,10 @@ export default function ComplaintManagementPage() {
                 <div className="max-w-6xl mx-auto">
                     <div className="bg-white rounded-lg shadow-lg">
                         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                            <h2 className="text-xl font-semibold text-gray-900">Complaint List</h2>
+                            <h2 className="text-xl font-semibold text-gray-900">Maintenance List</h2>
 
-                            <Button className="cursor-pointer " variant="contained" onClick={handleClickCreateComplaint}>
-                                Submit New Complaint
+                            <Button className="cursor-pointer " variant="contained" onClick={handleClickCreateMaintenance}>
+                                Submit New Maintenance
                             </Button>
                         </div>
                         <div className="p-6">
@@ -149,7 +149,7 @@ export default function ComplaintManagementPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {complaints.map((complaint) => (
+                                        {Maintenances.map((complaint) => (
                                             <tr key={complaint.id} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{complaint.studentName || "-"}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{complaint.studentId || "-"}</td>
@@ -214,7 +214,7 @@ export default function ComplaintManagementPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                                     <input
                                         type="text"
-                                        value={selectedComplaint?.title || ""}
+                                        value={selectedMaintenance?.title || ""}
                                         readOnly
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                                     />
@@ -222,7 +222,7 @@ export default function ComplaintManagementPage() {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Details</label>
                                     <textarea
-                                        value={selectedComplaint?.details || ""}
+                                        value={selectedMaintenance?.details || ""}
                                         readOnly
                                         rows={3}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 resize-none"
@@ -259,12 +259,12 @@ export default function ComplaintManagementPage() {
                 </div>
             )}
 
-            {openCreateComplaintModal && (
+            {openCreateMaintenanceModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     {/* Background overlay */}
                     <div
                         className="fixed inset-0 transition-opacity"
-                        onClick={handleCancelCreateComplaint}
+                        onClick={handleCancelCreateMaintenance}
                     ></div>
 
                     {/* Dialog content */}
@@ -285,16 +285,16 @@ export default function ComplaintManagementPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                                     <input
                                         type="text"
-                                        value={complaintTitle}
-                                        onChange={(e) => setComplaintTitle(e.target.value)}
+                                        value={maintenanceTitle}
+                                        onChange={(e) => setMaintenanceTitle(e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Details</label>
                                     <textarea
-                                        value={complaintDetails}
-                                        onChange={(e) => setComplaintDetails(e.target.value)}
+                                        value={maintenanceDetails}
+                                        onChange={(e) => setMaintenanceDetails(e.target.value)}
                                         rows={3}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 resize-none"
                                     />
@@ -303,14 +303,14 @@ export default function ComplaintManagementPage() {
                         </div>
                         <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                             <button
-                                onClick={() => createComplaint()}
-                                disabled={!complaintTitle.trim() || !complaintDetails.trim()}
+                                onClick={() => createMaintenance()}
+                                disabled={!maintenanceTitle.trim() || !maintenanceDetails.trim()}
                                 className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
                             >
                                 Submit
                             </button>
                             <button
-                                onClick={handleCancelCreateComplaint}
+                                onClick={handleCancelCreateMaintenance}
                                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm hover:cursor-pointer"
                             >
                                 Cancel

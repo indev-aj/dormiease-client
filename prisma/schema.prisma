@@ -15,6 +15,7 @@ model admins {
     password String
 
     complaints complaints[]
+    maintenances maintenances[]
 }
 
 model users {
@@ -26,6 +27,7 @@ model users {
 
     rooms      user_rooms[]
     complaints complaints[]
+    maintenances maintenances[]
     user_hostel_relation user_hostel_relation[]
 }
 
@@ -52,12 +54,29 @@ model user_rooms {
     @@index([roomId])
 }
 
-model complaints {
+model maintenances {
     id         Int             @id @default(autoincrement())
     admin      admins           @relation(fields: [adminId], references: [id])
     adminId    Int
     user       users            @relation(fields: [userId], references: [id])
     userId     Int
+    status     complaint_status
+    title      String
+    details    String
+    reply      String
+    created_at DateTime        @default(now())
+    updated_at DateTime        @updatedAt
+
+    @@index([adminId])
+    @@index([userId])
+}
+
+model complaints {
+    id         Int             @id @default(autoincrement())
+    admin      admins           @relation(fields: [adminId], references: [id])
+    adminId    Int
+    user       users?            @relation(fields: [userId], references: [id])
+    userId     Int?
     status     complaint_status
     title      String
     details    String

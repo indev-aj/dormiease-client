@@ -53,7 +53,7 @@ export default function TopBar({ userName }: Props) {
                         </a>
                         <a
                             href="/hostel-applications"
-                            className={`px-3 py-2 text-sm font-medium ${isActive("/HOSTEL-applications")
+                            className={`px-3 py-2 text-sm font-medium ${isActive("/hostel-applications")
                                     ? "text-blue-600 border-b-2 border-blue-600"
                                     : "text-gray-900 hover:text-gray-700"
                                 }`}
@@ -70,15 +70,6 @@ export default function TopBar({ userName }: Props) {
                             ROOMS
                         </a>
                         <a
-                            href="/room-applications"
-                            className={`px-3 py-2 text-sm font-medium ${isActive("/room-applications")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
-                                }`}
-                        >
-                            ROOM APPLICATION
-                        </a>
-                        <a
                             href="/complaints"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/complaints")
                                     ? "text-blue-600 border-b-2 border-blue-600"
@@ -86,6 +77,15 @@ export default function TopBar({ userName }: Props) {
                                 }`}
                         >
                             COMPLAINTS
+                        </a>
+                        <a
+                            href="/maintenances"
+                            className={`px-3 py-2 text-sm font-medium ${isActive("/maintenances")
+                                    ? "text-blue-600 border-b-2 border-blue-600"
+                                    : "text-gray-900 hover:text-gray-700"
+                                }`}
+                        >
+                            MAINTENANCE
                         </a>
                     </div>
                     <div className="flex items-center space-x-4">

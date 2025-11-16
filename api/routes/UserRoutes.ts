@@ -3,6 +3,7 @@ import { UserController } from '../controllers/UserController';
 import { RoomController } from '../controllers/RoomController';
 import { ComplaintController } from '../controllers/ComplaintController';
 import { HostelController } from '../controllers/HostelController';
+import { MaintenanceController } from '../controllers/MaintenanceController';
 
 const router = express.Router();
 
@@ -11,5 +12,6 @@ router.post('/signup', UserController.signup);
 router.post('/apply-room', RoomController.applyToRoom);
 router.post('/apply-hostel', HostelController.applyHostel);
 router.post('/submit-complaint', ComplaintController.submitComplaint);
+router.post('/submit-maintenance', MaintenanceController.submitMaintenance);
 
 export default router;

@@ -3,12 +3,12 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export class ComplaintController {
-    static async submitComplaint(req: Request, res: Response): Promise<any> {
+export class MaintenanceController {
+    static async submitMaintenance(req: Request, res: Response): Promise<any> {
         const { userId, title, details } = req.body
 
-        if (!title || !details) {
-            return res.status(400).json({ message: "title and details are required" })
+        if (!userId || !title || !details) {
+            return res.status(400).json({ message: "User ID, title and details are required" })
         }
 
         try {
@@ -17,9 +17,9 @@ export class ComplaintController {
                 parsedUserId = await prisma.users.findFirst({ where: { student_id: userId }});
             }
 
-            const complaint = await prisma.complaints.create({
+            const maintenance = await prisma.maintenances.create({
                 data: {
-                    userId: Number(userId) || Number(parsedUserId?.id) || null,
+                    userId: Number(userId) || Number(parsedUserId?.id),
                     adminId: 1, // TEMP: Placeholder, until assigned later
                     status: "open",
                     title,
@@ -28,14 +28,14 @@ export class ComplaintController {
                 },
             })
 
-            return res.status(201).json({ message: "Complaint submitted", complaint })
+            return res.status(201).json({ message: "Maintenance submitted", maintenance })
         } catch (error) {
-            console.error("Error submitting complaint:", error)
-            return res.status(500).json({ message: "Failed to submit complaint" })
+            console.error("Error submitting Maintenance:", error)
+            return res.status(500).json({ message: "Failed to submit Maintenance" })
         }
     }
 
-    static async updateComplaint(req: Request, res: Response): Promise<any> {
+    static async updateMaintenance(req: Request, res: Response): Promise<any> {
         const { id } = req.params
         const { adminId, reply } = req.body
 
@@ -44,7 +44,7 @@ export class ComplaintController {
         }
 
         try {
-            const complaint = await prisma.complaints.update({
+            const Maintenance = await prisma.maintenances.update({
                 where: { id: Number(id) },
                 data: {
                     reply,
@@ -53,16 +53,16 @@ export class ComplaintController {
                 },
             })
 
-            return res.status(200).json({ message: "Complaint updated", complaint })
+            return res.status(200).json({ message: "Maintenance updated", Maintenance })
         } catch (error) {
-            console.error("Error updating complaint:", error)
-            return res.status(500).json({ message: "Failed to update complaint" })
+            console.error("Error updating Maintenance:", error)
+            return res.status(500).json({ message: "Failed to update Maintenance" })
         }
     }
 
     static async fetchAll(req: Request, res: Response): Promise<any> {
         try {
-            const complaints = await prisma.complaints.findMany({
+            const maintenances = await prisma.maintenances.findMany({
                 include: {
                     user: {
                         select: {
@@ -76,10 +76,10 @@ export class ComplaintController {
                 },
             })
 
-            const formatted = complaints.map((c) => ({
+            const formatted = maintenances.map((c) => ({
                 id: c.id,
-                studentName: c.user?.name,
-                studentId: c.user?.student_id,
+                studentName: c.user.name,
+                studentId: c.user.student_id,
                 title: c.title ?? "", // use `c.title` if available in your schema
                 details: c.details,
                 reply: c.reply,
@@ -88,8 +88,8 @@ export class ComplaintController {
 
             return res.status(200).json(formatted)
         } catch (error) {
-            console.error("Error fetching complaints:", error)
-            return res.status(500).json({ message: "Failed to fetch complaints" })
+            console.error("Error fetching Maintenances:", error)
+            return res.status(500).json({ message: "Failed to fetch Maintenances" })
         }
     }
 
@@ -101,7 +101,7 @@ export class ComplaintController {
                 return res.status(400).json({ message: "userId is required" });
             }
 
-            const complaints = await prisma.complaints.findMany({
+            const Maintenances = await prisma.maintenances.findMany({
                 where: {
                     userId: parseInt(userId),
                 },
@@ -118,10 +118,10 @@ export class ComplaintController {
                 },
             });
 
-            const formatted = complaints.map(c => ({
+            const formatted = Maintenances.map(c => ({
                 id: c.id,
-                studentName: c.user?.name,
-                studentId: c.user?.student_id,
+                studentName: c.user.name,
+                studentId: c.user.student_id,
                 title: c.title,
                 details: c.details,
                 reply: c.reply,
@@ -131,8 +131,8 @@ export class ComplaintController {
 
             return res.status(200).json(formatted);
         } catch (error) {
-            console.error("Error fetching complaints by student:", error);
-            return res.status(500).json({ message: "Failed to fetch complaints" });
+            console.error("Error fetching Maintenances by student:", error);
+            return res.status(500).json({ message: "Failed to fetch Maintenances" });
         }
     }
 }
