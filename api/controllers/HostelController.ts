@@ -19,6 +19,9 @@ export class HostelController {
                     },
                     user_hostel_relation: true
                 },
+                orderBy: {
+                    id: 'desc'
+                }
             });
 
             const enriched = hostels.map((hostel) => {
@@ -59,7 +62,7 @@ export class HostelController {
                 const approvedUsers: number[] = [];
                 const pendingUsers: number[] = [];
                 const rejectedUsers: number[] = [];
-                
+
                 hostel.user_hostel_relation.forEach((ur) => {
                     if (ur.status === "approved") approvedUsers.push(ur.user_id);
                     if (ur.status === "pending") pendingUsers.push(ur.user_id);
@@ -296,6 +299,44 @@ export class HostelController {
             }
 
             return res.status(500).json({ message: "Failed to update application" });
+        }
+    }
+
+    static async fetchApplications(req: Request, res: Response): Promise<any> {
+        try {
+            const applications = await prisma.user_hostel_relation.findMany({
+                include: {
+                    user: true,
+                    hostel: true,
+                    room: {
+                        include: {
+                            user_hostel_relation: true
+                        }
+                    },
+                },
+                orderBy: {
+                    id: 'desc'
+                }
+            });
+
+            const formatted = applications.map(a => ({
+                applicationId: a.id,
+                userId: a.user_id,
+                studentName: a.user.name,
+                studentId: a.user.student_id,
+                hostelId: a.hostel_id,
+                hostelName: a.hostel.name,
+                roomId: a.room_id,
+                roomName: a.room?.name || null,
+                status: a.status,
+                approvedCount: a.room?.user_hostel_relation.filter(r => r.status === "approved").length || 0,
+                maxCount: a.room?.max_size || 0
+            }));
+
+            return res.status(200).json(formatted);
+        } catch (error) {
+            console.error("Error fetching hostel applications:", error);
+            return res.status(500).json({ message: "Failed to fetch hostel applications" });
         }
     }
 }

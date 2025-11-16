@@ -1,6 +1,27 @@
 export type Hostel = {
     id: number;
     name: string;
+    totalRooms: number;
+    totalCapacity: number;
+    totalApprovedUsers: number;
+    isFull: boolean;
+    approvedUsers: number[],
+    pendingUsers: number[],
+    rejectedUsers: number[],
+    rooms: [
+        {
+            id: number;
+            name: string;
+            maxSize: number;
+            currentUsers: number;
+            userStatuses: [
+                {
+                    userId: number;
+                    status: string;
+                }
+            ]
+        },
+    ]
 }
 
 export type Room = {

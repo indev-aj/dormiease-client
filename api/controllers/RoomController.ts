@@ -228,4 +228,38 @@ export class RoomController {
 
         return res.status(200).json(result);
     }
+
+    static async changeRoom(req: Request, res: Response): Promise<any> {
+        const { applicationId, newRoomId } = req.body;
+
+        try {
+            const application = await prisma.user_hostel_relation.findFirst({
+                where: {
+                    id: Number(applicationId)
+                }
+            });
+
+            if (!application) {
+                return res.status(404).json({ message: "Application not found" });
+            }
+
+            const updated = await prisma.user_hostel_relation.update({
+                where: {
+                    id: Number(applicationId)
+                },
+                data: {
+                    room_id: Number(newRoomId)
+                }
+            });
+
+            if (!updated) {
+                return res.status(404).json({ message: "Changing room failed" });
+            }
+
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error("Error changing room:", error);
+            return res.status(500).json({ message: "Failed to change room" });
+        }
+    }
 }

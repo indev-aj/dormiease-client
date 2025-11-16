@@ -8,6 +8,7 @@ import ComplaintManagementPage from './pages/ComplaintManagementPage'
 import AppLayout from './layouts/AppLayout'
 import RoomApplicationPage from './pages/RoomApplicationPage'
 import HostelManagementPage from './pages/HostelManagementPage'
+import HostelApplicationPage from './pages/HostelApplicationPage'
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                 <Route path="hostels" element={<HostelManagementPage />} />
                 <Route path="rooms" element={<RoomManagementPage />} />
                 <Route path="room-applications" element={<RoomApplicationPage />} />
+                <Route path="hostel-applications" element={<HostelApplicationPage />} />
                 <Route path="complaints" element={<ComplaintManagementPage />} />
                 <Route index element={<div>Welcome Dashboard</div>} />
                 <Route path="/home" element={<div>Welcome Dashboard</div>} />

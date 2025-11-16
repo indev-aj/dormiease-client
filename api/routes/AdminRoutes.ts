@@ -8,7 +8,8 @@ const router = express.Router();
 
 router.post('/signin', AdminController.signin);
 router.post('/signup', AdminController.signup);
-router.post('/update-hostel-application', HostelController.updateApplicationStatus);
+router.put('/update-hostel-application', HostelController.updateApplicationStatus);
+router.put('/change-room', RoomController.changeRoom);
 router.put('/update-application/:id', RoomController.updateApplicationStatus);
 router.put('/update-complaint/:id', ComplaintController.updateComplaint);
 
