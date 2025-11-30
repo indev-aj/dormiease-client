@@ -4,6 +4,7 @@ import { RoomController } from '../controllers/RoomController';
 import { ComplaintController } from '../controllers/ComplaintController';
 import { HostelController } from '../controllers/HostelController';
 import { MaintenanceController } from '../controllers/MaintenanceController';
+import NotificationController from '../controllers/NotificationController';
 
 const router = express.Router();
 
@@ -16,5 +17,8 @@ router.put('/change-room', RoomController.changeRoom);
 router.put('/update-application/:id', RoomController.updateApplicationStatus);
 router.put('/update-complaint/:id', ComplaintController.updateComplaint);
 router.put('/update-maintenance/:id', MaintenanceController.updateMaintenance);
+router.post('/create-notification', NotificationController.create);
+router.get('/notifications', NotificationController.adminGetAll);
+router.delete('/delete-notification/:id', NotificationController.delete);
 
 export default router;
