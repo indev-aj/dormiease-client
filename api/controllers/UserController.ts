@@ -63,4 +63,16 @@ export class UserController {
             .status(200)
             .json({ user: { id: user.id, name: user.name, email: user.email, studentId: user.student_id } })
     }
+
+    static async getAllUsers(req: Request, res: Response): Promise<any> {
+        try {
+            const users = await prisma.users.findMany({
+                select: { id: true, name: true }
+            });
+            return res.status(200).json(users);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Failed to fetch users");
+        }
+    }
 }

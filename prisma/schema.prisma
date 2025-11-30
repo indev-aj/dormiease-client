@@ -17,6 +17,7 @@ model admins {
     complaints complaints[]
     maintenances maintenances[]
     user_notifications user_notifications[]
+    conversations conversations[]
 }
 
 model users {
@@ -31,6 +32,7 @@ model users {
     maintenances maintenances[]
     user_hostel_relation user_hostel_relation[]
     user_notifications user_notifications[]
+    conversations conversations[]
 }
 
 model rooms {
@@ -151,4 +153,27 @@ model user_notifications {
     @@index([user_id])
     @@index([admin_id])
     @@index([notification_id])
+}
+
+model conversations {
+    id          Int      @id @default(autoincrement())
+    admin_id    Int
+    user_id     Int
+    created_at  DateTime @default(now())
+
+    admin admins @relation(fields: [admin_id], references: [id])
+    user  users  @relation(fields: [user_id], references: [id])
+    messages messages[]
+}
+
+model messages {
+    id              Int       @id @default(autoincrement())
+    conversation_id Int
+    sender_admin_id Int?
+    sender_user_id  Int?
+    content         String
+    is_read         Boolean   @default(false)
+    created_at      DateTime  @default(now())
+
+    conversation conversations @relation(fields: [conversation_id], references: [id])
 }
