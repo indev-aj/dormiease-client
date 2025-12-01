@@ -75,4 +75,17 @@ export class UserController {
             return res.status(500).send("Failed to fetch users");
         }
     }
+
+    static async getAllAdmins(req: Request, res: Response): Promise<any> {
+        try {
+            const admins = await prisma.admins.findMany({
+                select: { id: true, name: true }
+            });
+            
+            return res.status(200).json(admins);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Failed to fetch users");
+        }
+    }
 }

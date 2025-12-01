@@ -47,6 +47,18 @@ export default function MessagingWidget() {
         }
     }, [open]);
 
+    // Poll for new messages every 1 second
+    useEffect(() => {
+        if (!selectedConv) return; // Only poll when viewing a conversation
+
+        const interval = setInterval(() => {
+            fetchMessages(selectedConv);
+        }, 1000);
+
+        // Cleanup when conversation changes or widget closes
+        return () => clearInterval(interval);
+    }, [selectedConv, open]);
+
     return (
         <>
             {/* Floating Chat Button */}
@@ -59,7 +71,7 @@ export default function MessagingWidget() {
 
             {/* Chat Window */}
             {open && (
-                <Card className="fixed bottom-20 right-6 w-80 h-96 bg-white shadow-xl border border-gray-300 flex flex-col">
+                <Card className="fixed bottom-24 right-6 w-80 h-[120] bg-white shadow-xl border border-gray-300 flex flex-col">
                     {/* Header */}
                     <div className="p-3 border-b font-semibold flex justify-between items-center">
                         {selectedConv ? (
@@ -113,8 +125,8 @@ export default function MessagingWidget() {
                                 <div
                                     key={msg.id}
                                     className={`p-2 rounded-lg max-w-[80%] ${msg.sender_admin_id === ADMIN_ID
-                                            ? "bg-blue-100 ml-auto"
-                                            : "bg-gray-200"
+                                        ? "bg-blue-100 ml-auto"
+                                        : "bg-gray-200"
                                         }`}
                                 >
                                     {msg.content}
