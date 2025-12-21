@@ -12,6 +12,8 @@ import HostelApplicationPage from './pages/HostelApplicationPage'
 import MaintenanceManagementPage from './pages/MaintenanceManagementPage'
 import NotificationManagementPage from './pages/NotificationPage'
 import HomePage from './pages/HomePage'
+import ReportsPage from './pages/ReportsPage'
+import StudentReportPage from './pages/StudentReportPage'
 
 function App() {
     return (
@@ -27,6 +29,8 @@ function App() {
                 <Route path="complaints" element={<ComplaintManagementPage />} />
                 <Route path="maintenances" element={<MaintenanceManagementPage />} />
                 <Route path="notifications" element={<NotificationManagementPage />} />
+                <Route path="reports" element={<ReportsPage />} />
+                <Route path="reports/:applicationId" element={<StudentReportPage />} />
                 <Route index element={<HomePage />} />
                 <Route path="/home" element={<HomePage />} />
             </Route>
