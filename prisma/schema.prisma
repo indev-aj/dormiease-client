@@ -108,6 +108,8 @@ enum complaint_status {
 model hostels {
     id       Int    @id @default(autoincrement())
     name     String
+    move_in_date  DateTime?
+    move_out_date DateTime?
 
     user_hostel_relation user_hostel_relation[]
     rooms rooms[]

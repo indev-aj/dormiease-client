@@ -7,19 +7,34 @@ type ReportDetails = {
     applicationId: number;
     studentName: string;
     studentId: number;
+    userId: number;
     roomName: string | null;
     roomPrice: number;
     feePaid: boolean;
+    moveInDate?: string;
+    moveOutDate?: string;
     status: string;
     roomId: number | null;
 };
 
 const FETCH_ALL_APPLICATIONS_API = `http://localhost:3000/api/hostels/all-applications`;
+const FETCH_STUDENT_COMPLAINTS_API = `http://localhost:3000/api/complaint`;
+const FETCH_STUDENT_MAINTENANCES_API = `http://localhost:3000/api/maintenance`;
+
+type Ticket = {
+    id: number;
+    title: string;
+    details: string;
+    status: "open" | "resolved";
+    createdAt?: string;
+};
 
 export default function StudentReportPage() {
     const { applicationId } = useParams();
     const [report, setReport] = useState<ReportDetails | null>(null);
     const [loading, setLoading] = useState(true);
+    const [complaints, setComplaints] = useState<Ticket[]>([]);
+    const [maintenances, setMaintenances] = useState<Ticket[]>([]);
 
     const parsedId = useMemo(() => Number(applicationId), [applicationId]);
 
@@ -46,6 +61,32 @@ export default function StudentReportPage() {
 
         fetchReport();
     }, [parsedId]);
+
+    useEffect(() => {
+        const fetchTickets = async () => {
+            if (!report?.userId) {
+                setComplaints([]);
+                setMaintenances([]);
+                return;
+            }
+
+            try {
+                const [complaintsRes, maintenancesRes] = await Promise.all([
+                    axios.get(`${FETCH_STUDENT_COMPLAINTS_API}/${report.userId}`),
+                    axios.get(`${FETCH_STUDENT_MAINTENANCES_API}/${report.userId}`),
+                ]);
+
+                setComplaints(complaintsRes.data || []);
+                setMaintenances(maintenancesRes.data || []);
+            } catch (error) {
+                console.error("Error fetching student tickets:", error);
+                setComplaints([]);
+                setMaintenances([]);
+            }
+        };
+
+        fetchTickets();
+    }, [report?.userId]);
 
     const handlePrint = () => {
         window.print();
@@ -113,6 +154,61 @@ export default function StudentReportPage() {
                         <span className={`pill ${report.feePaid ? "pill--paid" : "pill--unpaid"}`}>
                             {report.feePaid ? "Paid" : "Unpaid"}
                         </span>
+                    </div>
+                    <div className="flex justify-between border border-gray-100 rounded-xl px-4 py-3">
+                        <span className="font-medium text-gray-600">Move In Date</span>
+                        <span>{report.moveInDate ? report.moveInDate.toString().slice(0, 10) : "-"}</span>
+                    </div>
+                    <div className="flex justify-between border border-gray-100 rounded-xl px-4 py-3">
+                        <span className="font-medium text-gray-600">Move Out Date</span>
+                        <span>{report.moveOutDate ? report.moveOutDate.toString().slice(0, 10) : "-"}</span>
+                    </div>
+                </div>
+
+                <div className="mt-8">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Student Submitted Tickets</h3>
+                    <div className="space-y-4">
+                        <div>
+                            <div className="text-sm font-medium text-gray-600 mb-2">Complaints</div>
+                            {complaints.length === 0 ? (
+                                <div className="text-sm text-gray-500">No complaints submitted.</div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {complaints.map((ticket) => (
+                                        <div key={`complaint-${ticket.id}`} className="border border-gray-100 rounded-xl px-4 py-3">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="font-medium text-gray-800">{ticket.title}</span>
+                                                <span className={`pill ${ticket.status === "resolved" ? "pill--resolved" : "pill--open"}`}>
+                                                    {ticket.status}
+                                                </span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">{ticket.details}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div>
+                            <div className="text-sm font-medium text-gray-600 mb-2">Maintenance Requests</div>
+                            {maintenances.length === 0 ? (
+                                <div className="text-sm text-gray-500">No maintenance requests submitted.</div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {maintenances.map((ticket) => (
+                                        <div key={`maintenance-${ticket.id}`} className="border border-gray-100 rounded-xl px-4 py-3">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="font-medium text-gray-800">{ticket.title}</span>
+                                                <span className={`pill ${ticket.status === "resolved" ? "pill--resolved" : "pill--open"}`}>
+                                                    {ticket.status}
+                                                </span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">{ticket.details}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 

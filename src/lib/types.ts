@@ -1,6 +1,8 @@
 export type Hostel = {
     id: number;
     name: string;
+    moveInDate?: string;
+    moveOutDate?: string;
     totalRooms: number;
     totalCapacity: number;
     totalApprovedUsers: number;

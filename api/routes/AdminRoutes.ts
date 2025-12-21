@@ -16,6 +16,7 @@ router.get('/all-admins', UserController.getAllAdmins);
 router.post('/submit-complaint', ComplaintController.submitComplaint);
 router.post('/submit-maintenance', MaintenanceController.submitMaintenance);
 router.put('/update-hostel-application', HostelController.updateApplicationStatus);
+router.put('/update-hostel-dates/:id', HostelController.updateMoveDates);
 router.put('/change-room', RoomController.changeRoom);
 router.put('/update-application/:id', RoomController.updateApplicationStatus);
 router.put('/update-room-price/:id', RoomController.updateRoomPrice);

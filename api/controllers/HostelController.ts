@@ -2,6 +2,14 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+const DEFAULT_MOVE_IN_DATE = () => {
+    const year = new Date().getFullYear();
+    return new Date(`${year}-01-01T00:00:00.000Z`);
+};
+const DEFAULT_MOVE_OUT_DATE = () => {
+    const year = new Date().getFullYear();
+    return new Date(`${year}-12-31T00:00:00.000Z`);
+};
 
 export class HostelController {
     /**
@@ -73,6 +81,8 @@ export class HostelController {
                 return {
                     id: hostel.id,
                     name: hostel.name,
+                    moveInDate: hostel.move_in_date || DEFAULT_MOVE_IN_DATE(),
+                    moveOutDate: hostel.move_out_date || DEFAULT_MOVE_OUT_DATE(),
                     totalRooms: hostel.rooms.length,
                     totalCapacity,
                     totalApprovedUsers,
@@ -99,16 +109,21 @@ export class HostelController {
      * Create a new room with name and max_size
      */
     static async create(req: Request, res: Response): Promise<any> {
-        const { name } = req.body;
+        const { name, moveInDate, moveOutDate } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: "name is required" });
         }
 
         try {
+            const resolvedMoveIn = moveInDate ? new Date(moveInDate) : DEFAULT_MOVE_IN_DATE();
+            const resolvedMoveOut = moveOutDate ? new Date(moveOutDate) : DEFAULT_MOVE_OUT_DATE();
+
             const hostel = await prisma.hostels.create({
                 data: {
-                    name
+                    name,
+                    move_in_date: resolvedMoveIn,
+                    move_out_date: resolvedMoveOut
                 },
             });
 
@@ -333,6 +348,8 @@ export class HostelController {
                 status: a.status,
                 feePaid: a.fee_paid,
                 feePaidAt: a.fee_paid_at,
+                moveInDate: a.hostel.move_in_date || DEFAULT_MOVE_IN_DATE(),
+                moveOutDate: a.hostel.move_out_date || DEFAULT_MOVE_OUT_DATE(),
                 approvedCount: a.room?.user_hostel_relation.filter(r => r.status === "approved").length || 0,
                 maxCount: a.room?.max_size || 0
             }));
@@ -367,6 +384,30 @@ export class HostelController {
         } catch (error) {
             console.error("Error updating fee status:", error);
             return res.status(500).json({ message: "Failed to update fee status" });
+        }
+    }
+
+    static async updateMoveDates(req: Request, res: Response): Promise<any> {
+        const { id } = req.params;
+        const { moveInDate, moveOutDate } = req.body;
+
+        if (!moveInDate || !moveOutDate) {
+            return res.status(400).json({ message: "moveInDate and moveOutDate are required" });
+        }
+
+        try {
+            const updated = await prisma.hostels.update({
+                where: { id: Number(id) },
+                data: {
+                    move_in_date: new Date(moveInDate),
+                    move_out_date: new Date(moveOutDate)
+                }
+            });
+
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error("Error updating move dates:", error);
+            return res.status(500).json({ message: "Failed to update move dates" });
         }
     }
 }
