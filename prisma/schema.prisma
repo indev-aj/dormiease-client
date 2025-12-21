@@ -39,6 +39,7 @@ model rooms {
     id       Int    @id @default(autoincrement())
     name     String
     max_size Int
+    price    Int    @default(0)
     hostel   hostels @relation(fields: [hostel_id], references: [id])
     hostel_id Int
 
@@ -121,6 +122,8 @@ model user_hostel_relation {
     room     rooms?      @relation(fields: [room_id], references: [id])
     room_id   Int?
     status   room_status @default(pending)
+    fee_paid Boolean     @default(false)
+    fee_paid_at DateTime?
 
     @@index([user_id])
     @@index([hostel_id])

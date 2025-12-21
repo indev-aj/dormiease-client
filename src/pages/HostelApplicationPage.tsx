@@ -21,7 +21,10 @@ type Application = {
     hostelName: string;
     roomId: number | null;
     roomName: string | null;
+    roomPrice: number;
     status: string;
+    feePaid: boolean;
+    feePaidAt: string | null;
     approvedCount: number;
     maxCount: number;
 }
@@ -30,6 +33,7 @@ const FETCH_ALL_APPLICATIONS_API = `http://localhost:3000/api/hostels/all-applic
 const FETCH_ALL_HOSTELS_API = `http://localhost:3000/api/hostels/all`;
 const UPDATE_APPLICATION_API = `http://localhost:3000/api/admin/update-hostel-application`;
 const CHANGE_ROOM_API = `http://localhost:3000/api/admin/change-room`;
+const UPDATE_FEE_STATUS_API = `http://localhost:3000/api/admin/update-fee-status`;
 
 export default function HostelApplicationPage() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -80,6 +84,20 @@ export default function HostelApplicationPage() {
         }
     }
 
+    const handleUpdateFeeStatus = async (applicationId: number, feePaid: boolean) => {
+        try {
+            const payload = {
+                applicationId,
+                feePaid
+            };
+
+            await axios.put(UPDATE_FEE_STATUS_API, payload);
+            await fetchApplications();
+        } catch (error) {
+            console.error("Error updating fee status:", error);
+        }
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -105,7 +123,9 @@ export default function HostelApplicationPage() {
                         <TableHead>Student ID</TableHead>
                         <TableHead>Hostel</TableHead>
                         <TableHead>Room</TableHead>
+                        <TableHead>Room Price</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Fee Status</TableHead>
                         <TableHead className="text-center">Actions</TableHead>
                         <TableHead className="text-center">Change Room</TableHead>
                     </TableRow>
@@ -117,7 +137,21 @@ export default function HostelApplicationPage() {
                             <TableCell>{app.studentId}</TableCell>
                             <TableCell>{app.hostelName}</TableCell>
                             <TableCell>{app.roomName}</TableCell>
+                            <TableCell>{app.roomPrice}</TableCell>
                             <TableCell>{app.status}</TableCell>
+                            <TableCell>
+                                <div className="flex items-center gap-2">
+                                    <span>{app.feePaid ? "Paid" : "Unpaid"}</span>
+                                    {app.status === "approved" && app.roomId && (
+                                        <Button
+                                            className="border-blue-600 text-white bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                                            onClick={() => handleUpdateFeeStatus(app.applicationId, !app.feePaid)}
+                                        >
+                                            {app.feePaid ? "Mark Unpaid" : "Mark Paid"}
+                                        </Button>
+                                    )}
+                                </div>
+                            </TableCell>
                             <TableCell className="flex gap-2 justify-center">
                                 <Button
                                     className="border-green-600 text-white bg-green-600 hover:bg-green-700 cursor-pointer"

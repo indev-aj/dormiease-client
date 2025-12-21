@@ -21,6 +21,7 @@ export class RoomController {
                 id: room.id,
                 name: room.name,
                 maxSize: room.max_size,
+                price: room.price,
                 hostelId: room.hostel_id,
                 currentUsers: room.user_hostel_relation.filter((ur) => ur.status === "approved")
                     .length,
@@ -43,9 +44,9 @@ export class RoomController {
      * Create a new room with name and max_size
      */
     static async create(req: Request, res: Response): Promise<any> {
-        const { name, maxSize, hostelId } = req.body;
+        const { name, maxSize, hostelId, price } = req.body;
 
-        if (!name || !maxSize || !hostelId) {
+        if (!name || !maxSize || !hostelId || price === undefined) {
             return res.status(400).json({ message: "Invalid room data" });
         }
 
@@ -54,7 +55,8 @@ export class RoomController {
                 data: {
                     name,
                     max_size: Number(maxSize),
-                    hostel_id: Number(hostelId)
+                    hostel_id: Number(hostelId),
+                    price: Number(price)
                 },
             });
 
@@ -248,7 +250,9 @@ export class RoomController {
                     id: Number(applicationId)
                 },
                 data: {
-                    room_id: Number(newRoomId)
+                    room_id: Number(newRoomId),
+                    fee_paid: false,
+                    fee_paid_at: null
                 }
             });
 
@@ -260,6 +264,27 @@ export class RoomController {
         } catch (error) {
             console.error("Error changing room:", error);
             return res.status(500).json({ message: "Failed to change room" });
+        }
+    }
+
+    static async updateRoomPrice(req: Request, res: Response): Promise<any> {
+        const { id } = req.params;
+        const { price } = req.body;
+
+        if (price === undefined) {
+            return res.status(400).json({ message: "price is required" });
+        }
+
+        try {
+            const updated = await prisma.rooms.update({
+                where: { id: Number(id) },
+                data: { price: Number(price) }
+            });
+
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error("Error updating room price:", error);
+            return res.status(500).json({ message: "Failed to update room price" });
         }
     }
 }

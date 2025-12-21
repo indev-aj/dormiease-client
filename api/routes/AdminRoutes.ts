@@ -18,6 +18,8 @@ router.post('/submit-maintenance', MaintenanceController.submitMaintenance);
 router.put('/update-hostel-application', HostelController.updateApplicationStatus);
 router.put('/change-room', RoomController.changeRoom);
 router.put('/update-application/:id', RoomController.updateApplicationStatus);
+router.put('/update-room-price/:id', RoomController.updateRoomPrice);
+router.put('/update-fee-status', HostelController.updateFeeStatus);
 router.put('/update-complaint/:id', ComplaintController.updateComplaint);
 router.put('/update-maintenance/:id', MaintenanceController.updateMaintenance);
 router.post('/create-notification', NotificationController.create);

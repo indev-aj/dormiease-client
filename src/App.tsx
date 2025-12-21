@@ -11,6 +11,7 @@ import HostelManagementPage from './pages/HostelManagementPage'
 import HostelApplicationPage from './pages/HostelApplicationPage'
 import MaintenanceManagementPage from './pages/MaintenanceManagementPage'
 import NotificationManagementPage from './pages/NotificationPage'
+import HomePage from './pages/HomePage'
 
 function App() {
     return (
@@ -26,8 +27,8 @@ function App() {
                 <Route path="complaints" element={<ComplaintManagementPage />} />
                 <Route path="maintenances" element={<MaintenanceManagementPage />} />
                 <Route path="notifications" element={<NotificationManagementPage />} />
-                <Route index element={<div>Welcome Dashboard</div>} />
-                <Route path="/home" element={<div>Welcome Dashboard</div>} />
+                <Route index element={<HomePage />} />
+                <Route path="/home" element={<HomePage />} />
             </Route>
         </Routes>
     )

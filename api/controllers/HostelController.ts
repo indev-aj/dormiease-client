@@ -35,6 +35,7 @@ export class HostelController {
                         id: room.id,
                         name: room.name,
                         maxSize: room.max_size,
+                        price: room.price,
                         currentUsers: approvedUsers.length,
                         userStatuses: room.user_hostel_relation.map((ur) => ({
                             userId: ur.user_id,
@@ -328,7 +329,10 @@ export class HostelController {
                 hostelName: a.hostel.name,
                 roomId: a.room_id,
                 roomName: a.room?.name || null,
+                roomPrice: a.room?.price || 0,
                 status: a.status,
+                feePaid: a.fee_paid,
+                feePaidAt: a.fee_paid_at,
                 approvedCount: a.room?.user_hostel_relation.filter(r => r.status === "approved").length || 0,
                 maxCount: a.room?.max_size || 0
             }));
@@ -337,6 +341,32 @@ export class HostelController {
         } catch (error) {
             console.error("Error fetching hostel applications:", error);
             return res.status(500).json({ message: "Failed to fetch hostel applications" });
+        }
+    }
+
+    static async updateFeeStatus(req: Request, res: Response): Promise<any> {
+        const { applicationId, feePaid } = req.body;
+
+        if (!applicationId || typeof feePaid !== "boolean") {
+            return res.status(400).json({
+                message: "applicationId and feePaid(boolean) are required",
+            });
+        }
+
+        try {
+            const updated = await prisma.user_hostel_relation.update({
+                where: { id: Number(applicationId) },
+                data: {
+                    fee_paid: feePaid,
+                    fee_paid_at: feePaid ? new Date() : null
+                },
+                include: { room: true, user: true }
+            });
+
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error("Error updating fee status:", error);
+            return res.status(500).json({ message: "Failed to update fee status" });
         }
     }
 }

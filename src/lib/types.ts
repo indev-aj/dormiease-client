@@ -13,6 +13,7 @@ export type Hostel = {
             id: number;
             name: string;
             maxSize: number;
+            price: number;
             currentUsers: number;
             userStatuses: [
                 {
@@ -28,6 +29,7 @@ export type Room = {
     id: number;
     name: string;
     maxSize: number;
+    price: number;
     currentUsers: number;
     hostelId: number | null;
 }
@@ -35,5 +37,6 @@ export type Room = {
 export type NewRoomState = {
     name: string;
     maxSize: string;
+    price: string;
     hostelId: number | null;
 };

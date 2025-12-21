@@ -23,28 +23,57 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 const FETCH_ALL_HOSTELS_API = 'http://localhost:3000/api/hostels/all';
 const FETCH_ALL_ROOMS_API = 'http://localhost:3000/api/room/all';
 const CREATE_ROOM_API = 'http://localhost:3000/api/room/create';
+const UPDATE_ROOM_PRICE_API = 'http://localhost:3000/api/admin/update-room-price';
 
 export default function RoomManagementPage() {
     const [rooms, setRooms] = useState<Room[]>([]);
-    const [newRoom, setNewRoom] = useState<NewRoomState>({ name: "", maxSize: "", hostelId: null });
+    const [newRoom, setNewRoom] = useState<NewRoomState>({ name: "", maxSize: "", price: "", hostelId: null });
     const [hostels, setHostels] = useState<Hostel[]>([]);
+    const [priceEdits, setPriceEdits] = useState<Record<number, string>>({});
 
     const handleAddRoom = async () => {
-        if (!newRoom.name || !newRoom.maxSize) return
+        if (!newRoom.name || !newRoom.maxSize || !newRoom.price) return
 
-        const createRoom = await axios.post(CREATE_ROOM_API, { name: newRoom.name, maxSize: newRoom.maxSize, hostelId: newRoom.hostelId });
+        const createRoom = await axios.post(CREATE_ROOM_API, {
+            name: newRoom.name,
+            maxSize: newRoom.maxSize,
+            price: newRoom.price,
+            hostelId: newRoom.hostelId
+        });
 
         const room: Room = {
             id: createRoom.data['id'],
             name: newRoom.name,
             maxSize: parseInt(newRoom.maxSize),
+            price: parseInt(newRoom.price),
             currentUsers: 0,
             hostelId: newRoom.hostelId
         }
 
         setRooms([...rooms, room])
-        setNewRoom({ name: "", maxSize: "", hostelId: null })
+        setNewRoom({ name: "", maxSize: "", price: "", hostelId: null })
     }
+
+    const handlePriceEdit = (roomId: number, value: string) => {
+        setPriceEdits((prev) => ({ ...prev, [roomId]: value }));
+    };
+
+    const handleUpdateRoomPrice = async (roomId: number) => {
+        const value = priceEdits[roomId];
+        if (!value) return;
+
+        await axios.put(`${UPDATE_ROOM_PRICE_API}/${roomId}`, { price: value });
+        setRooms((prev) =>
+            prev.map((room) =>
+                room.id === roomId ? { ...room, price: parseInt(value) } : room
+            )
+        );
+        setPriceEdits((prev) => {
+            const next = { ...prev };
+            delete next[roomId];
+            return next;
+        });
+    };
 
     useEffect(() => {
         const fetchAllRooms = async () => {
@@ -87,6 +116,8 @@ export default function RoomManagementPage() {
                                 <TableRow>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Max Size</TableHead>
+                                    <TableHead>Price</TableHead>
+                                    <TableHead className="text-center">Update Price</TableHead>
                                     <TableHead>Hostel Name</TableHead>
                                     <TableHead>Current Users</TableHead>
                                 </TableRow>
@@ -96,6 +127,22 @@ export default function RoomManagementPage() {
                                     <TableRow key={room.id} className="text-left">
                                         <TableCell>{room.name}</TableCell>
                                         <TableCell>{room.maxSize}</TableCell>
+                                        <TableCell>{room.price}</TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-2">
+                                                <Input
+                                                    type="number"
+                                                    value={priceEdits[room.id] ?? room.price.toString()}
+                                                    onChange={(e) => handlePriceEdit(room.id, e.target.value)}
+                                                />
+                                                <Button
+                                                    variant="contained"
+                                                    onClick={() => handleUpdateRoomPrice(room.id)}
+                                                >
+                                                    Save
+                                                </Button>
+                                            </div>
+                                        </TableCell>
                                         <TableCell>{hostels.find(h => h.id == room.hostelId)?.name || ''}</TableCell>
                                         <TableCell>{room.currentUsers}</TableCell>
                                     </TableRow>
@@ -129,6 +176,17 @@ export default function RoomManagementPage() {
                                 placeholder="e.g. 4"
                                 value={newRoom.maxSize}
                                 onChange={(e) => setNewRoom({ ...newRoom, maxSize: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="roomPrice">Room Price</Label>
+                            <Input
+                                id="roomPrice"
+                                type="number"
+                                placeholder="e.g. 500"
+                                value={newRoom.price}
+                                onChange={(e) => setNewRoom({ ...newRoom, price: e.target.value })}
                             />
                         </div>
 
