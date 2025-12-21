@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from 'axios';
-import { Button } from "@mui/material";
+import { Button } from "@/components/ui/button";
 
 
 type Maintenance = {
@@ -121,66 +121,62 @@ export default function MaintenanceManagementPage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Fixed Navigation Bar */}
+        <div className="page-shell page-enter">
+            <div className="page-header">
+                <div>
+                    <h2 className="page-title">Maintenance</h2>
+                    <p className="page-subtitle">Log and resolve maintenance requests.</p>
+                </div>
+                <Button className="bg-[var(--accent)] text-white hover:bg-[var(--accent-strong)]" onClick={handleClickCreateMaintenance}>
+                    Submit New Maintenance
+                </Button>
+            </div>
 
-            {/* Main Content */}
-            <div className="pt-20 pb-10 px-4">
-                <div className="max-w-6xl mx-auto">
-                    <div className="bg-white rounded-lg shadow-lg">
-                        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                            <h2 className="text-xl font-semibold text-gray-900">Maintenance List</h2>
-
-                            <Button className="cursor-pointer " variant="contained" onClick={handleClickCreateMaintenance}>
-                                Submit New Maintenance
-                            </Button>
-                        </div>
-                        <div className="p-6">
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {Maintenances.map((complaint) => (
-                                            <tr key={complaint.id} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{complaint.studentName || "-"}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{complaint.studentId || "-"}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{complaint.title}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-900">{complaint.details}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-center">
-                                                    {complaint.status === "open" ? (
-                                                        <button
-                                                            onClick={() => openDialog(complaint)}
-                                                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium border border-blue-500"
-                                                        >
-                                                            Reply
-                                                        </button>
-                                                    ) : (
-                                                        <span className="text-gray-400 italic text-sm">Resolved</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`capitalize px-3 py-1 rounded-full text-xs font-semibold ${complaint.status === "open"
-                                                        ? "bg-red-100 text-red-700"
-                                                        : "bg-green-100 text-green-700"
-                                                        }`}>
-                                                        {complaint.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+            <div className="panel">
+                <div className="panel-header">
+                    <span className="panel-title">Maintenance List</span>
+                </div>
+                <div className="panel-body data-table">
+                    <div className="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Student ID</th>
+                                    <th>Title</th>
+                                    <th>Details</th>
+                                    <th className="text-center">Action</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Maintenances.map((complaint) => (
+                                    <tr key={complaint.id}>
+                                        <td>{complaint.studentName || "-"}</td>
+                                        <td>{complaint.studentId || "-"}</td>
+                                        <td>{complaint.title}</td>
+                                        <td>{complaint.details}</td>
+                                        <td className="text-center">
+                                            {complaint.status === "open" ? (
+                                                <Button
+                                                    className="bg-[var(--accent)] text-white hover:bg-[var(--accent-strong)]"
+                                                    onClick={() => openDialog(complaint)}
+                                                >
+                                                    Reply
+                                                </Button>
+                                            ) : (
+                                                <span className="text-gray-400 italic text-sm">Resolved</span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <span className={`pill ${complaint.status === "open" ? "pill--open" : "pill--resolved"}`}>
+                                                {complaint.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -188,17 +184,15 @@ export default function MaintenanceManagementPage() {
             {/* Dialog/Modal */}
             {isDialogOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    {/* Background overlay */}
                     <div
-                        className="fixed inset-0 transition-opacity"
+                        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"
                         onClick={closeDialog}
                     ></div>
 
-                    {/* Dialog content */}
-                    <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto">
-                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg mx-auto border border-gray-200">
+                        <div className="px-6 pt-6 pb-4">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-medium text-gray-900">Reply to Complaint</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">Reply to Maintenance</h3>
                                 <button
                                     onClick={closeDialog}
                                     className="text-gray-400 hover:text-gray-600"
@@ -216,7 +210,7 @@ export default function MaintenanceManagementPage() {
                                         type="text"
                                         value={selectedMaintenance?.title || ""}
                                         readOnly
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-500"
                                     />
                                 </div>
                                 <div>
@@ -225,7 +219,7 @@ export default function MaintenanceManagementPage() {
                                         value={selectedMaintenance?.details || ""}
                                         readOnly
                                         rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 resize-none"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-500 resize-none"
                                     />
                                 </div>
                                 <div>
@@ -235,25 +229,26 @@ export default function MaintenanceManagementPage() {
                                         value={replyText}
                                         onChange={(e) => setReplyText(e.target.value)}
                                         rows={4}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-slate-300 focus:border-slate-400 resize-none"
                                     />
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button
+                        <div className="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3">
+                            <Button
                                 onClick={handleResolve}
                                 disabled={!replyText.trim()}
-                                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                className="bg-[var(--accent)] text-white hover:bg-[var(--accent-strong)] disabled:bg-gray-300"
                             >
                                 Resolve
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                                variant="outline"
                                 onClick={closeDialog}
-                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                className="border-gray-200"
                             >
                                 Cancel
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -261,16 +256,14 @@ export default function MaintenanceManagementPage() {
 
             {openCreateMaintenanceModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    {/* Background overlay */}
                     <div
-                        className="fixed inset-0 transition-opacity"
+                        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"
                         onClick={handleCancelCreateMaintenance}
                     ></div>
 
-                    {/* Dialog content */}
-                    <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto">
-                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-
+                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg mx-auto border border-gray-200">
+                        <div className="px-6 pt-6 pb-4">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Submit Maintenance</h3>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
@@ -278,7 +271,7 @@ export default function MaintenanceManagementPage() {
                                         type="text"
                                         value={studentId}
                                         onChange={(e) => setStudentId(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-700"
                                     />
                                 </div>
                                 <div>
@@ -287,7 +280,7 @@ export default function MaintenanceManagementPage() {
                                         type="text"
                                         value={maintenanceTitle}
                                         onChange={(e) => setMaintenanceTitle(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-700"
                                     />
                                 </div>
                                 <div>
@@ -296,25 +289,26 @@ export default function MaintenanceManagementPage() {
                                         value={maintenanceDetails}
                                         onChange={(e) => setMaintenanceDetails(e.target.value)}
                                         rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 resize-none"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-700 resize-none"
                                     />
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button
+                        <div className="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3">
+                            <Button
                                 onClick={() => createMaintenance()}
                                 disabled={!maintenanceTitle.trim() || !maintenanceDetails.trim()}
-                                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                className="bg-[var(--accent)] text-white hover:bg-[var(--accent-strong)] disabled:bg-gray-300"
                             >
                                 Submit
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                                variant="outline"
                                 onClick={handleCancelCreateMaintenance}
-                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm hover:cursor-pointer"
+                                className="border-gray-200"
                             >
                                 Cancel
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

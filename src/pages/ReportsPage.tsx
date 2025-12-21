@@ -43,36 +43,48 @@ export default function ReportsPage() {
     };
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Student Reports</h2>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead className="text-center">Report</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.applicationId}>
-                            <TableCell>{row.studentName}</TableCell>
-                            <TableCell className="text-center">
-                                <Button
-                                    className="border-blue-600 text-white bg-blue-600 hover:bg-blue-700 cursor-pointer"
-                                    onClick={() => handleOpenReport(row.applicationId)}
-                                >
-                                    Show Report
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                    {rows.length === 0 && (
-                        <TableRow>
-                            <TableCell colSpan={2}>No approved students yet.</TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+        <div className="page-shell page-enter">
+            <div className="page-header">
+                <div>
+                    <h2 className="page-title">Student Reports</h2>
+                    <p className="page-subtitle">Generate official fee statements per student.</p>
+                </div>
+            </div>
+            <div className="panel">
+                <div className="panel-header">
+                    <span className="panel-title">Approved Students</span>
+                </div>
+                <div className="panel-body data-table">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Student Name</TableHead>
+                                <TableHead className="text-center">Report</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {rows.map((row) => (
+                                <TableRow key={row.applicationId}>
+                                    <TableCell>{row.studentName}</TableCell>
+                                    <TableCell className="text-center">
+                                        <Button
+                                            className="border-transparent text-white bg-[var(--accent)] hover:bg-[var(--accent-strong)] cursor-pointer"
+                                            onClick={() => handleOpenReport(row.applicationId)}
+                                        >
+                                            Show Report
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {rows.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={2}>No approved students yet.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
         </div>
     );
 }

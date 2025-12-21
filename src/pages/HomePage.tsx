@@ -40,31 +40,47 @@ export default function HomePage() {
     }, []);
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Student Fee Status</h2>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>Room Fee</TableHead>
-                        <TableHead>Payment Status</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.applicationId}>
-                            <TableCell>{row.studentName}</TableCell>
-                            <TableCell>{row.roomPrice}</TableCell>
-                            <TableCell>{row.feePaid ? "Paid" : "Unpaid"}</TableCell>
-                        </TableRow>
-                    ))}
-                    {rows.length === 0 && (
-                        <TableRow>
-                            <TableCell colSpan={3}>No approved students yet.</TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+        <div className="page-shell page-enter">
+            <div className="page-header">
+                <div>
+                    <h2 className="page-title">Fee Status Overview</h2>
+                    <p className="page-subtitle">Approved students with assigned rooms and fee status.</p>
+                </div>
+            </div>
+            <div className="panel">
+                <div className="panel-header">
+                    <span className="panel-title">Student Fee Ledger</span>
+                </div>
+                <div className="panel-body data-table">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Student Name</TableHead>
+                                <TableHead>Room Fee</TableHead>
+                                <TableHead>Payment Status</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {rows.map((row) => (
+                                <TableRow key={row.applicationId}>
+                                    <TableCell>{row.studentName}</TableCell>
+                                    <TableCell>{row.roomPrice}</TableCell>
+                                    <TableCell>
+                                        <span className={`pill ${row.feePaid ? "pill--paid" : "pill--unpaid"}`}>
+                                            {row.feePaid ? "Paid" : "Unpaid"}
+                                        </span>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {rows.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={3}>No approved students yet.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
         </div>
     );
 }

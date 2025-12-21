@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import Button from '@mui/material/Button';
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
@@ -42,87 +42,99 @@ export default function AdminSignUpForm() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
-            <Card className="w-full max-w-lg shadow-xl border border-gray-200 rounded-2xl">
-                <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-semibold">Admin Sign Up</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <Label htmlFor="name">Name</Label>
-                            <Input
-                                id="name"
-                                name="name"
-                                placeholder="John Doe"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                                className="mt-1"
-                            />
-                        </div>
+        <div className="auth-shell">
+            <div className="auth-card page-enter">
+                <div className="auth-hero">
+                    <div>
+                        <h1>Hostel Admin Portal</h1>
+                        <p>Provision staff access for hostel operations, fee tracking, and student support.</p>
+                    </div>
+                    <div>
+                        <p className="text-xs uppercase tracking-[0.3em]">University Operations</p>
+                    </div>
+                </div>
 
-                        <div>
-                            <Label htmlFor="staffId">Staff ID</Label>
-                            <Input
-                                id="staffId"
-                                name="staffId"
-                                placeholder="e.g. ADM001"
-                                value={formData.staffId}
-                                onChange={handleChange}
-                                required
-                                className="mt-1 "
-                            />
-                        </div>
+                <Card className="auth-form">
+                    <CardHeader className="text-left p-0 mb-6">
+                        <CardTitle className="text-2xl font-semibold">Create Account</CardTitle>
+                        <p className="page-subtitle">Register a new admin profile.</p>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <div>
+                                <Label htmlFor="name">Name</Label>
+                                <Input
+                                    id="name"
+                                    name="name"
+                                    placeholder="John Doe"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1"
+                                />
+                            </div>
 
-                        <div>
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                className="mt-1"
-                            />
-                        </div>
+                            <div>
+                                <Label htmlFor="staffId">Staff ID</Label>
+                                <Input
+                                    id="staffId"
+                                    name="staffId"
+                                    placeholder="e.g. ADM001"
+                                    value={formData.staffId}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 "
+                                />
+                            </div>
 
-                        <div>
-                            <Label htmlFor="rePassword">Repeat Password</Label>
-                            <Input
-                                id="rePassword"
-                                name="rePassword"
-                                type="password"
-                                placeholder="••••••••"
-                                value={formData.rePassword}
-                                onChange={handleChange}
-                                required
-                                className="mt-1"
-                            />
-                        </div>
+                            <div>
+                                <Label htmlFor="password">Password</Label>
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1"
+                                />
+                            </div>
 
-                        <Button
-                            variant="contained"
-                            type="submit"
-                            className="w-full text-white text-md py-2"
-                        >
-                            Sign Up
-                        </Button>
+                            <div>
+                                <Label htmlFor="rePassword">Repeat Password</Label>
+                                <Input
+                                    id="rePassword"
+                                    name="rePassword"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={formData.rePassword}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1"
+                                />
+                            </div>
 
-                        <div className="text-center text-sm text-gray-600 mt-4">
-                            Already have an account?{" "}
-                            <Link
-                                to="/login"
-                                className="text-blue-600 hover:underline font-medium"
+                            <Button
+                                type="submit"
+                                className="w-full bg-[var(--accent)] text-white hover:bg-[var(--accent-strong)]"
                             >
-                                Sign in here
-                            </Link>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
+                                Sign Up
+                            </Button>
+
+                            <div className="text-center text-sm text-gray-600 mt-4">
+                                Already have an account?{" "}
+                                <Link
+                                    to="/login"
+                                    className="text-blue-600 hover:underline font-medium"
+                                >
+                                    Sign in here
+                                </Link>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     )
 }

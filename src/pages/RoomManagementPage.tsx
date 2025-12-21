@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from 'axios';
-import Button from '@mui/material/Button';
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -103,14 +103,19 @@ export default function RoomManagementPage() {
     }, []);
 
     return (
-        <div className="py-10 px-4">
-            <div className="w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Table Section */}
-                <Card className="md:col-span-2 shadow-lg bg-white border-gray-400">
-                    <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Room List</CardTitle>
+        <div className="page-shell page-enter">
+            <div className="page-header">
+                <div>
+                    <h2 className="page-title">Room Management</h2>
+                    <p className="page-subtitle">Set pricing, capacity, and availability per room.</p>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="panel lg:col-span-2">
+                    <CardHeader className="panel-header">
+                        <CardTitle className="panel-title">Room List</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="panel-body data-table">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -136,7 +141,7 @@ export default function RoomManagementPage() {
                                                     onChange={(e) => handlePriceEdit(room.id, e.target.value)}
                                                 />
                                                 <Button
-                                                    variant="contained"
+                                                    className="bg-[var(--accent)] text-white hover:bg-[var(--accent-strong)]"
                                                     onClick={() => handleUpdateRoomPrice(room.id)}
                                                 >
                                                     Save
@@ -152,12 +157,11 @@ export default function RoomManagementPage() {
                     </CardContent>
                 </Card>
 
-                {/* Form Section */}
-                <Card className="shadow-lg bg-white border-gray-400 relative h-fit">
-                    <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Add New Room</CardTitle>
+                <Card className="panel h-fit">
+                    <CardHeader className="panel-header">
+                        <CardTitle className="panel-title">Add New Room</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="panel-body space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="roomName">Room Name</Label>
                             <Input
@@ -192,12 +196,12 @@ export default function RoomManagementPage() {
 
                         <div className="space-y-2">
                             <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">Select Room</InputLabel>
+                                <InputLabel id="demo-simple-select-label">Select Hostel</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     value={newRoom.hostelId?.toString()}
-                                    label="Select Room"
+                                    label="Select Hostel"
                                     onChange={(value) =>
                                         setNewRoom({ ...newRoom, hostelId: Number(value) })
                                     }
@@ -211,7 +215,7 @@ export default function RoomManagementPage() {
                             </FormControl>
                         </div>
 
-                        <Button variant="contained" onClick={handleAddRoom} className="w-full">
+                        <Button className="w-full bg-slate-900 text-white hover:bg-slate-800" onClick={handleAddRoom}>
                             Add Room
                         </Button>
                     </CardContent>

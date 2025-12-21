@@ -36,8 +36,8 @@ export default function TopBar({ userName }: Props) {
                         <a
                             href="/home"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/home")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
+                                    ? "text-[var(--accent-strong)] border-b-2 border-[var(--accent)]"
+                                    : "text-gray-900 hover:text-[var(--accent-strong)]"
                                 }`}
                         >
                             HOME
@@ -45,8 +45,8 @@ export default function TopBar({ userName }: Props) {
                         <a
                             href="/hostels"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/hostels")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
+                                    ? "text-[var(--accent-strong)] border-b-2 border-[var(--accent)]"
+                                    : "text-gray-900 hover:text-[var(--accent-strong)]"
                                 }`}
                         >
                             HOSTELS
@@ -54,8 +54,8 @@ export default function TopBar({ userName }: Props) {
                         <a
                             href="/hostel-applications"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/hostel-applications")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
+                                    ? "text-[var(--accent-strong)] border-b-2 border-[var(--accent)]"
+                                    : "text-gray-900 hover:text-[var(--accent-strong)]"
                                 }`}
                         >
                             HOSTEL APPLICATION
@@ -63,8 +63,8 @@ export default function TopBar({ userName }: Props) {
                         <a
                             href="/rooms"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/rooms")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
+                                    ? "text-[var(--accent-strong)] border-b-2 border-[var(--accent)]"
+                                    : "text-gray-900 hover:text-[var(--accent-strong)]"
                                 }`}
                         >
                             ROOMS
@@ -72,8 +72,8 @@ export default function TopBar({ userName }: Props) {
                         <a
                             href="/complaints"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/complaints")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
+                                    ? "text-[var(--accent-strong)] border-b-2 border-[var(--accent)]"
+                                    : "text-gray-900 hover:text-[var(--accent-strong)]"
                                 }`}
                         >
                             COMPLAINTS
@@ -81,8 +81,8 @@ export default function TopBar({ userName }: Props) {
                         <a
                             href="/maintenances"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/maintenances")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
+                                    ? "text-[var(--accent-strong)] border-b-2 border-[var(--accent)]"
+                                    : "text-gray-900 hover:text-[var(--accent-strong)]"
                                 }`}
                         >
                             MAINTENANCE
@@ -90,8 +90,8 @@ export default function TopBar({ userName }: Props) {
                         <a
                             href="/notifications"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/notifications")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
+                                    ? "text-[var(--accent-strong)] border-b-2 border-[var(--accent)]"
+                                    : "text-gray-900 hover:text-[var(--accent-strong)]"
                                 }`}
                         >
                             NOTIFICATIONS
@@ -99,16 +99,16 @@ export default function TopBar({ userName }: Props) {
                         <a
                             href="/reports"
                             className={`px-3 py-2 text-sm font-medium ${isActive("/reports")
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-900 hover:text-gray-700"
+                                    ? "text-[var(--accent-strong)] border-b-2 border-[var(--accent)]"
+                                    : "text-gray-900 hover:text-[var(--accent-strong)]"
                                 }`}
                         >
                             REPORTS
                         </a>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <span className="text-gray-600 text-sm">Hello, <span className="font-medium">Admin</span></span>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium" onClick={handleLogout}>LOGOUT</button>
+                        {/* <span className="text-gray-600 text-sm">Hello, <span className="font-medium">Admin</span></span> */}
+                        <button className="bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white px-4 py-2 rounded text-sm font-medium" onClick={handleLogout}>LOGOUT</button>
                     </div>
                 </div>
             </div>

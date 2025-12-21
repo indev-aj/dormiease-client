@@ -114,84 +114,109 @@ export default function HostelApplicationPage() {
     }, []);
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Hostel Applications</h2>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>Student ID</TableHead>
-                        <TableHead>Hostel</TableHead>
-                        <TableHead>Room</TableHead>
-                        <TableHead>Room Price</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Fee Status</TableHead>
-                        <TableHead className="text-center">Actions</TableHead>
-                        <TableHead className="text-center">Change Room</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {applications.map((app) => (
-                        <TableRow key={app.applicationId}>
-                            <TableCell>{app.studentName}</TableCell>
-                            <TableCell>{app.studentId}</TableCell>
-                            <TableCell>{app.hostelName}</TableCell>
-                            <TableCell>{app.roomName}</TableCell>
-                            <TableCell>{app.roomPrice}</TableCell>
-                            <TableCell>{app.status}</TableCell>
-                            <TableCell>
-                                <div className="flex items-center gap-2">
-                                    <span>{app.feePaid ? "Paid" : "Unpaid"}</span>
-                                    {app.status === "approved" && app.roomId && (
+        <div className="page-shell page-enter">
+            <div className="page-header">
+                <div>
+                    <h2 className="page-title">Hostel Applications</h2>
+                    <p className="page-subtitle">Approve assignments, manage rooms, and track fees.</p>
+                </div>
+            </div>
+            <div className="panel">
+                <div className="panel-header">
+                    <span className="panel-title">Applications</span>
+                </div>
+                <div className="panel-body data-table">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Student Name</TableHead>
+                                <TableHead>Student ID</TableHead>
+                                <TableHead>Hostel</TableHead>
+                                <TableHead>Room</TableHead>
+                                <TableHead>Room Price</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Fee Status</TableHead>
+                                <TableHead className="text-center">Actions</TableHead>
+                                <TableHead className="text-center">Change Room</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {applications.map((app) => (
+                                <TableRow key={app.applicationId}>
+                                    <TableCell>{app.studentName}</TableCell>
+                                    <TableCell>{app.studentId}</TableCell>
+                                    <TableCell>{app.hostelName}</TableCell>
+                                    <TableCell>{app.roomName}</TableCell>
+                                    <TableCell>{app.roomPrice}</TableCell>
+                                    <TableCell>
+                                        <span
+                                            className={`pill ${app.status === "approved"
+                                                ? "pill--approved"
+                                                : app.status === "rejected"
+                                                    ? "pill--rejected"
+                                                    : "pill--pending"
+                                                }`}
+                                        >
+                                            {app.status}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`pill ${app.feePaid ? "pill--paid" : "pill--unpaid"}`}>
+                                                {app.feePaid ? "Paid" : "Unpaid"}
+                                            </span>
+                                            {app.status === "approved" && app.roomId && (
+                                                <Button
+                                                    className="border-transparent text-white bg-[var(--accent)] hover:bg-[var(--accent-strong)] cursor-pointer"
+                                                    onClick={() => handleUpdateFeeStatus(app.applicationId, !app.feePaid)}
+                                                >
+                                                    {app.feePaid ? "Mark Unpaid" : "Mark Paid"}
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="flex gap-2 justify-center">
                                         <Button
-                                            className="border-blue-600 text-white bg-blue-600 hover:bg-blue-700 cursor-pointer"
-                                            onClick={() => handleUpdateFeeStatus(app.applicationId, !app.feePaid)}
+                                            className="border-transparent text-white bg-[var(--accent)] hover:bg-[var(--accent-strong)] cursor-pointer"
+                                            disabled={app.status == "approved" || app.status == "rejected"}
+                                            onClick={() => handleUpdateApplication(app.applicationId, "approved")}
                                         >
-                                            {app.feePaid ? "Mark Unpaid" : "Mark Paid"}
+                                            Approve
                                         </Button>
-                                    )}
-                                </div>
-                            </TableCell>
-                            <TableCell className="flex gap-2 justify-center">
-                                <Button
-                                    className="border-green-600 text-white bg-green-600 hover:bg-green-700 cursor-pointer"
-                                    disabled={app.status == "approved" || app.status == "rejected"}
-                                    onClick={() => handleUpdateApplication(app.applicationId, "approved")}
-                                >
-                                    Approve
-                                </Button>
-                                <Button
-                                    className="border-red-600 text-white bg-red-500 hover:bg-red-700 cursor-pointer"
-                                    disabled={app.status == "approved" || app.status == "rejected"}
-                                    onClick={() => handleUpdateApplication(app.applicationId, "rejected")}
-                                >
-                                    Reject
-                                </Button>
-                            </TableCell>
-                            <TableCell>
-                                {app.status === "approved" && (
-                                    <FormControl size="small" fullWidth>
-                                        <Select
-                                            value={app.roomId || ""}
-                                            onChange={(e) => handleRoomChange(app.applicationId, e.target.value as number)}
-                                            displayEmpty
+                                        <Button
+                                            className="border-transparent text-white bg-slate-900 hover:bg-slate-800 cursor-pointer"
+                                            disabled={app.status == "approved" || app.status == "rejected"}
+                                            onClick={() => handleUpdateApplication(app.applicationId, "rejected")}
                                         >
-                                            <MenuItem value="" disabled>
-                                                Select Room
-                                            </MenuItem>
-                                            {getAvailableRooms(app.hostelId).map((room) => (
-                                                <MenuItem key={room.id} value={room.id}>
-                                                    {room.name} ({room.currentUsers}/{room.maxSize})
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                )}
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                                            Reject
+                                        </Button>
+                                    </TableCell>
+                                    <TableCell>
+                                        {app.status === "approved" && (
+                                            <FormControl size="small" fullWidth>
+                                                <Select
+                                                    value={app.roomId || ""}
+                                                    onChange={(e) => handleRoomChange(app.applicationId, e.target.value as number)}
+                                                    displayEmpty
+                                                >
+                                                    <MenuItem value="" disabled>
+                                                        Select Room
+                                                    </MenuItem>
+                                                    {getAvailableRooms(app.hostelId).map((room) => (
+                                                        <MenuItem key={room.id} value={room.id}>
+                                                            {room.name} ({room.currentUsers}/{room.maxSize})
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
         </div>
     )
 }

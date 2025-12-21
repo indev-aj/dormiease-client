@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from 'axios';
-import Button from '@mui/material/Button';
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -50,14 +50,19 @@ export default function HostelManagementPage() {
     }, []);
 
     return (
-        <div className="py-10 px-4">
-            <div className="w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Table Section */}
-                <Card className="md:col-span-2 shadow-lg bg-white border-gray-400">
-                    <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Hostel List</CardTitle>
+        <div className="page-shell page-enter">
+            <div className="page-header">
+                <div>
+                    <h2 className="page-title">Hostel Management</h2>
+                    <p className="page-subtitle">Create and manage hostel entries.</p>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="panel lg:col-span-2">
+                    <CardHeader className="panel-header">
+                        <CardTitle className="panel-title">Hostel List</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="panel-body data-table">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -75,12 +80,11 @@ export default function HostelManagementPage() {
                     </CardContent>
                 </Card>
 
-                {/* Form Section */}
-                <Card className="shadow-lg h-fit bg-white border-gray-400">
-                    <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Add New Hostel</CardTitle>
+                <Card className="panel h-fit">
+                    <CardHeader className="panel-header">
+                        <CardTitle className="panel-title">Add New Hostel</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="panel-body space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="hostelName">Hostel Name</Label>
                             <Input
@@ -91,7 +95,7 @@ export default function HostelManagementPage() {
                             />
                         </div>
 
-                        <Button variant="contained" onClick={handleAddHostel} className="w-full">
+                        <Button className="w-full bg-slate-900 text-white hover:bg-slate-800" onClick={handleAddHostel}>
                             Add Hostel
                         </Button>
                     </CardContent>

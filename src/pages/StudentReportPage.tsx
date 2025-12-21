@@ -52,12 +52,12 @@ export default function StudentReportPage() {
     };
 
     if (loading) {
-        return <div className="p-6">Loading report...</div>;
+        return <div className="page-shell page-enter">Loading report...</div>;
     }
 
     if (!report) {
         return (
-            <div className="p-6">
+            <div className="page-shell page-enter">
                 <p className="mb-4">Report not found.</p>
                 <Link to="/reports" className="text-blue-600 underline">Back to Reports</Link>
             </div>
@@ -65,49 +65,64 @@ export default function StudentReportPage() {
     }
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6 print:hidden max-w-3xl mx-auto">
-                <Link to="/reports" className="text-blue-600 underline">Back to Reports</Link>
+        <div className="page-shell page-enter">
+            <div className="page-header print:hidden">
+                <div>
+                    <h2 className="page-title">Student Statement</h2>
+                    <p className="page-subtitle">Official record for hostel assignment and fee status.</p>
+                </div>
                 <Button
-                    className="border-gray-800 text-white bg-gray-900 hover:bg-gray-800 cursor-pointer"
+                    className="border-transparent text-white bg-[var(--accent)] hover:bg-[var(--accent-strong)] cursor-pointer"
                     onClick={handlePrint}
                 >
                     Print / Save as PDF
                 </Button>
             </div>
 
-            <div className="print-statement max-w-3xl mx-auto bg-white border border-gray-200 shadow-sm print:shadow-none print:border-0 p-5">
-                <div className="border-b border-gray-200 pb-4 mb-6">
-                    <h1 className="text-2xl font-semibold text-gray-900">Official Student Statement</h1>
-                    <p className="text-sm text-gray-500">Hostel Management System</p>
+            <div className="print-statement max-w-3xl mx-auto panel p-6 print:shadow-none print:border-0">
+                <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
+                    <div>
+                        <h1 className="text-2xl font-semibold text-gray-900">Official Student Statement</h1>
+                        <p className="text-sm text-gray-500">Hostel Management System</p>
+                    </div>
+                    <div className="text-right text-xs text-gray-400">
+                        <div>Document ID</div>
+                        <div>HM-{report.applicationId}</div>
+                    </div>
                 </div>
 
-                <div className="space-y-4 text-gray-800">
-                    <div className="flex justify-between">
-                        <span className="font-medium">Student Name</span>
+                <div className="grid gap-4 text-gray-800">
+                    <div className="flex justify-between border border-gray-100 rounded-xl px-4 py-3">
+                        <span className="font-medium text-gray-600">Student Name</span>
                         <span>{report.studentName}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="font-medium">Student ID</span>
+                    <div className="flex justify-between border border-gray-100 rounded-xl px-4 py-3">
+                        <span className="font-medium text-gray-600">Student ID</span>
                         <span>{report.studentId}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="font-medium">Assigned Room</span>
+                    <div className="flex justify-between border border-gray-100 rounded-xl px-4 py-3">
+                        <span className="font-medium text-gray-600">Assigned Room</span>
                         <span>{report.roomName || "Not Assigned"}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="font-medium">Room Fee</span>
+                    <div className="flex justify-between border border-gray-100 rounded-xl px-4 py-3">
+                        <span className="font-medium text-gray-600">Room Fee</span>
                         <span>{report.roomPrice}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="font-medium">Payment Status</span>
-                        <span>{report.feePaid ? "Paid" : "Unpaid"}</span>
+                    <div className="flex justify-between border border-gray-100 rounded-xl px-4 py-3">
+                        <span className="font-medium text-gray-600">Payment Status</span>
+                        <span className={`pill ${report.feePaid ? "pill--paid" : "pill--unpaid"}`}>
+                            {report.feePaid ? "Paid" : "Unpaid"}
+                        </span>
                     </div>
                 </div>
 
                 <div className="mt-8 text-sm text-gray-500">
                     This statement is generated by the hostel administration and reflects the latest recorded fee status.
                 </div>
+            </div>
+
+            <div className="mt-6 text-center print:hidden">
+                <Link to="/reports" className="text-blue-600 underline">Back to Reports</Link>
             </div>
         </div>
     );

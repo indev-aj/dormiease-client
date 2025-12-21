@@ -49,50 +49,59 @@ export default function RoomApplicationPage() {
     }
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Room Applications</h2>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>Student ID</TableHead>
-                        <TableHead>Room</TableHead>
-                        <TableHead>Approved Count</TableHead>
-                        <TableHead>Max Count</TableHead>
-                        <TableHead className="text-center">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {applications.map((app) => (
-                        <TableRow key={app.id}>
-                            <TableCell>{app.user.name}</TableCell>
-                            <TableCell>{app.user.student_id}</TableCell>
-                            <TableCell>{app.room.name}</TableCell>
-                            <TableCell>
-                                {
-                                    app.room.userRooms.filter((r) => r.status === "approved")
-                                        .length
-                                }
-                            </TableCell>
-                            <TableCell>{ app.room.maxCount }</TableCell>
-                            <TableCell className="flex gap-2 justify-center">
-                                <Button
-                                    className="border-green-600 text-white bg-green-600 hover:bg-green-700 cursor-pointer"
-                                    onClick={() => handleAction(app.id, "approve")}
-                                >
-                                    Approve
-                                </Button>
-                                <Button
-                                    className="border-red-600 text-white bg-red-500 hover:bg-red-700 cursor-pointer"
-                                    onClick={() => handleAction(app.id, "reject")}
-                                >
-                                    Reject
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+        <div className="page-shell page-enter">
+            <div className="page-header">
+                <div>
+                    <h2 className="page-title">Room Applications</h2>
+                    <p className="page-subtitle">Review and approve room assignment requests.</p>
+                </div>
+            </div>
+            <div className="panel">
+                <div className="panel-header">
+                    <span className="panel-title">Pending Requests</span>
+                </div>
+                <div className="panel-body data-table">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Student Name</TableHead>
+                                <TableHead>Student ID</TableHead>
+                                <TableHead>Room</TableHead>
+                                <TableHead>Approved Count</TableHead>
+                                <TableHead>Max Count</TableHead>
+                                <TableHead className="text-center">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {applications.map((app) => (
+                                <TableRow key={app.id}>
+                                    <TableCell>{app.user.name}</TableCell>
+                                    <TableCell>{app.user.student_id}</TableCell>
+                                    <TableCell>{app.room.name}</TableCell>
+                                    <TableCell>
+                                        {app.room.userRooms.filter((r) => r.status === "approved").length}
+                                    </TableCell>
+                                    <TableCell>{app.room.maxCount}</TableCell>
+                                    <TableCell className="flex gap-2 justify-center">
+                                        <Button
+                                            className="border-transparent text-white bg-[var(--accent)] hover:bg-[var(--accent-strong)] cursor-pointer"
+                                            onClick={() => handleAction(app.id, "approve")}
+                                        >
+                                            Approve
+                                        </Button>
+                                        <Button
+                                            className="border-transparent text-white bg-slate-900 hover:bg-slate-800 cursor-pointer"
+                                            onClick={() => handleAction(app.id, "reject")}
+                                        >
+                                            Reject
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
         </div>
     )
 }
