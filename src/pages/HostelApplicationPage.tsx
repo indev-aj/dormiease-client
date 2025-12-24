@@ -11,6 +11,14 @@ import { Select, MenuItem, FormControl } from '@mui/material';
 import axios from "axios";
 import { useEffect, useState } from "react";
 import type { Hostel } from "@/lib/types";
+import { QRCodeCanvas } from "qrcode.react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 type Application = {
     applicationId: number;
@@ -38,6 +46,9 @@ const UPDATE_FEE_STATUS_API = `http://localhost:3000/api/admin/update-fee-status
 export default function HostelApplicationPage() {
     const [applications, setApplications] = useState<Application[]>([]);
     const [hostels, setHostels] = useState<Hostel[]>([]);
+    const [qrOpen, setQrOpen] = useState(false);
+    const [qrValue, setQrValue] = useState("");
+    const [qrLabel, setQrLabel] = useState("");
 
     const fetchApplications = async () => {
         const applications = await axios.get(FETCH_ALL_APPLICATIONS_API);
@@ -97,6 +108,13 @@ export default function HostelApplicationPage() {
             console.error("Error updating fee status:", error);
         }
     }
+
+    const openPaymentQr = (applicationId: number, studentName: string) => {
+        const value = `http://localhost:3000/api/admin/update-fee-status?applicationId=${applicationId}&feePaid=true`;
+        setQrValue(value);
+        setQrLabel(studentName);
+        setQrOpen(true);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -166,12 +184,22 @@ export default function HostelApplicationPage() {
                                                 {app.feePaid ? "Paid" : "Unpaid"}
                                             </span>
                                             {app.status === "approved" && app.roomId && (
-                                                <Button
-                                                    className="border-transparent text-white bg-[var(--accent)] hover:bg-[var(--accent-strong)] cursor-pointer"
-                                                    onClick={() => handleUpdateFeeStatus(app.applicationId, !app.feePaid)}
-                                                >
-                                                    {app.feePaid ? "Mark Unpaid" : "Mark Paid"}
-                                                </Button>
+                                                <>
+                                                    <Button
+                                                        className="border-transparent text-white bg-[var(--accent)] hover:bg-[var(--accent-strong)] cursor-pointer"
+                                                        onClick={() => handleUpdateFeeStatus(app.applicationId, !app.feePaid)}
+                                                    >
+                                                        {app.feePaid ? "Mark Unpaid" : "Mark Paid"}
+                                                    </Button>
+                                                    {!app.feePaid && (
+                                                        <Button
+                                                            className="border-transparent text-white bg-slate-900 hover:bg-slate-800 cursor-pointer"
+                                                            onClick={() => openPaymentQr(app.applicationId, app.studentName)}
+                                                        >
+                                                            Show QR
+                                                        </Button>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     </TableCell>
@@ -217,6 +245,23 @@ export default function HostelApplicationPage() {
                     </Table>
                 </div>
             </div>
+
+            <Dialog open={qrOpen} onOpenChange={setQrOpen}>
+                <DialogContent className="bg-white">
+                    <DialogHeader>
+                        <DialogTitle>Payment QR</DialogTitle>
+                        <DialogDescription>
+                            Scan to mark fee as paid{qrLabel ? ` for ${qrLabel}` : ""}.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center gap-4 py-4">
+                        <QRCodeCanvas value={qrValue} size={220} />
+                        <div className="text-xs text-muted-foreground break-all text-center">
+                            {qrValue}
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
