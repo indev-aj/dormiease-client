@@ -362,9 +362,23 @@ export class HostelController {
     }
 
     static async updateFeeStatus(req: Request, res: Response): Promise<any> {
-        const { applicationId, feePaid } = req.body;
+        const body = req.body ?? {};
+        const applicationIdRaw = body.applicationId ?? req.query.applicationId;
+        const feePaidRaw = body.feePaid ?? req.query.feePaid;
+        const applicationId = Number(applicationIdRaw);
+        let feePaid: boolean | null = null;
 
-        if (!applicationId || typeof feePaid !== "boolean") {
+        if (typeof feePaidRaw === "boolean") {
+            feePaid = feePaidRaw;
+        } else if (typeof feePaidRaw === "string") {
+            if (feePaidRaw.toLowerCase() === "true") feePaid = true;
+            if (feePaidRaw.toLowerCase() === "false") feePaid = false;
+        } else if (typeof feePaidRaw === "number") {
+            if (feePaidRaw === 1) feePaid = true;
+            if (feePaidRaw === 0) feePaid = false;
+        }
+
+        if (!applicationId || Number.isNaN(applicationId) || feePaid === null) {
             return res.status(400).json({
                 message: "applicationId and feePaid(boolean) are required",
             });
@@ -380,7 +394,15 @@ export class HostelController {
                 include: { room: true, user: true }
             });
 
-            return res.status(200).json(updated);
+            return res.status(200).json({
+                message: "Fee status updated",
+                applicationId: updated.id,
+                feePaid: updated.fee_paid,
+                feePaidAt: updated.fee_paid_at,
+                userId: updated.user_id,
+                hostelId: updated.hostel_id,
+                roomId: updated.room_id,
+            });
         } catch (error) {
             console.error("Error updating fee status:", error);
             return res.status(500).json({ message: "Failed to update fee status" });
